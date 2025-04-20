@@ -182,5 +182,22 @@ Thumbs.db:encryptable
 ehthumbs.db
 ehthumbs_vista.db
 
+# Dagster
+artifacts/
+history/
+logs/
+schedules/
+.telemetry/
+.logs_queue/
+.nux/
+storage/
+
+# dbt
+dbt_packages/
+src/dbt_modules/
+src/target/
+src/logs/
+package-lock.concurrent-update-lock
+
 # Datasets
 data/
