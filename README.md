@@ -6,6 +6,7 @@ This is a Github repository template for analytics use cases. It uses data from 
 Linking precipitation and dengue cases in selected Philippine cities to find trends and insights. 
 
 ## Key files
+- **Dockerfile** creates a Docker image to prepare the environment, install dependencies, and set configurations for the workflow to function. 
 - **.gitignore** defines files to exclude from Git tracking. It uses a Python template and ignores Windows files and the data folder. 
 - **.pre-commit-config.yaml** automates linting, formatting, and validation. It includes the following repos: (a) ruff-pre-commit, (b) sqlfluff, (c) jupytext, and (d) pre-commit hooks. 
 - **README.md** provides an overview of the repository: it's purpose, structure, and instructions for setup. 
@@ -13,6 +14,7 @@ Linking precipitation and dengue cases in selected Philippine cities to find tre
 
 ## Key folders
 - **data** stores the datasets. Git tracking ignores this folder as this mainly includes large downloaded files. It is structured into raw and processed data. 
+- **docs** contains additional files documenting details for specific files, folders, functions, and processes.
 - **notebooks** contains Jupyter notebooks that can be run for downloading data, doing EDAs, and visualization. Categories under this folder include: (a) download, (b) processing, (c) analysis, and (d) visualization. 
 - **src** contains Python scripts for reusable components (e.g., functions, imports, paths) used in the pipeline.
 - **tests** contains test scripts to validate the workflow. 
