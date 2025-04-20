@@ -1,0 +1,47 @@
+version: '3'
+
+tasks:
+  default:
+    desc: Run setup and start containers
+    cmd:
+      task: up
+
+  init:
+    desc: Initial environment and dependencies
+    cmds:
+      - pip install -U pre-commit
+      - pre-commit install
+      - uv sync
+      - mkdir -p ./data/lake
+
+  up:
+    desc: Build and start containers
+    cmd: infisical run -- docker compose up --detach --build --remove-orphans
+
+  stop:
+    desc: Stop containers
+    cmd: docker compose stop
+
+  logs:
+    desc: Follow logs
+    cmd: docker compose logs --follow {{ .CLI_ARGS }}
+
+  restart:
+    desc: Restart containers
+    cmd: docker compose restart {{ .CLI_ARGS }}
+
+  down:
+    desc: Stop and remove containers
+    cmd: docker compose down
+
+  clean:
+    desc: Nuke everything, full cleanup
+    cmd: docker compose down --volumes --remove-orphans
+
+  exec:
+    desc: Execute a command in a running container
+    cmd: docker compose exec {{ .CLI_ARGS }}
+
+  install-uv:
+    desc: Install uv
+    cmd: curl -fsSL https://astral.sh/uv/install.sh | sh
