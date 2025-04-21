@@ -1,27 +1,39 @@
 # analytics-repo
 
-This is a Github repository template for analytics use cases. It uses data from [Project CCHAIN](https://thinkingmachines.github.io/project-cchain/). 
+This is a Github repository template for analytics use cases. It uses data from [Project CCHAIN](https://thinkingmachines.github.io/project-cchain/) and uses some of the configurations from Kenneth Domingo's [analytics-data=eng-play respository](https://github.com/kvdomingo/analytics-data-engg-play/tree/main).
 
 ## Sample Use Case <br><br>
 
 Linking precipitation and dengue cases in selected Philippine cities to find trends and insights. <br><br>
 
+## Tech stack <br><br>
+- [Python 3.12](https://docs.python.org/3.12/)
+- [uv](https://docs.astral.sh/uv)
+- [Dagster](https://docs.dagster.io)
+- [Polars](https://docs.pola.rs)
+- [DuckDB](https://duckdb.org/docs/stable/)
+- [dbt](https://docs.getdbt.com/)
+
+## Prerequisites <br><br>
+- [Mise](https://mise.jdx.dev/getting-started.html)
+- [Docker](https://docker.com)
+
 ## Key files<br><br>
 
 - **dagster.yaml** configures a Dagster instance by defining settings for storage, run execution, logging, sensors, and schedulers. <br><br>
 
-- **dbt_project.yaml** configures a dbt project by defining settings like project name, version, pths, models, and other configurations. <br><br> 
+- **dbt_project.yaml** configures a dbt project by defining settings like project name, version, pths, models, and other configurations. <br><br>
 
 - **docker-compose.yaml** defines Dagster as the main service for managing data workflows, PostgreSQL for storage, and configures environment variables. <br><br>
 
 - **Dockerfile** creates a Docker image to prepare the environment, install dependencies, and set configurations for the workflow to function. <br><br>
 
-- **.env.example** contains a template for keys and credentials. Create an actual **.env** file containing actual keys and credentials. It is worth noting that .env files should be included in gitignore so it does not get uploaded to the remote repository. <br><br> 
+- **.env.example** contains a template for keys and credentials. Create an actual **.env** file containing actual keys and credentials. It is worth noting that .env files should be included in gitignore so it does not get uploaded to the remote repository. <br><br>
 
 - **.gitattributes** defines attributes and behaviors for specific file types and paths. For this specific repository, we ask that Jupyter notebooks (.json) be read using Python syntax. <br><br>
 - **.gitignore** defines files to exclude from Git tracking. It uses a Python template and ignores Windows files and the data folder. <br><br>
 
-- **.mise.toml** manages development environment and dependencies. <br><br> 
+- **.mise.toml** manages development environment and dependencies. <br><br>
 
 - **.pre-commit-config.yaml** automates linting, formatting, and validation. It includes the following repos: (a) ruff-pre-commit, (b) sqlfluff, (c) jupytext, and (d) pre-commit hooks. <br><br>
 
@@ -45,4 +57,46 @@ Linking precipitation and dengue cases in selected Philippine cities to find tre
 
 - **tests** contains test scripts to validate the workflow. <br><br>
 
+## Instructions for use <br><br>
 
+1. Install requirements in shell.
+    ```shell
+    curl https://mise.run | sh #mise
+    sudo snap install task #task
+    curl -LsSf https://astral.sh/uv/install.sh | sh #uv
+    ```
+<br>
+
+2. Install tools in shell. See [.mise.toml](./.mise.toml).
+    ```shell
+    mise trust -y
+    mise install -y
+    ```
+<br>
+
+3. Initialize a `pyproject.toml` file.
+    ```shell
+    uv init
+    uv sync --active
+    ```
+<br>
+
+4. Make sure that Docker is integrated to your OS. In Docker Desktop: Settings > Resources > WSL Integration > Select applicable.
+<br>
+
+5. Run initial [setup script](./Taskfile.yml#L8). This will install [pre-commit hooks](./.pre-commit-config.yaml) and create the [Python virtualenv](./pyproject.toml) for the project.
+    ```shell
+    task init
+    ```
+<br>
+
+6. Create a `.env` file using the template `.env.example`. You need to provide your secrets.
+<br>
+
+7. Run the [taskfile](./Taskfile.yml#L16) (i.e., container launch script).
+    ```shell
+    task
+    ```
+<br>
+
+8. Access the Dagster UI at `http://localhost:3030`.

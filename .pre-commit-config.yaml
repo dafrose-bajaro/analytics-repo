@@ -22,7 +22,7 @@ repos:
     - id: jupytext
       args: [--from, ipynb, --to, "py:percent", --pipe, black, --pipe, "isort - --profile black"]
       stages:
-        - commit
+        - pre-commit
       additional_dependencies:
         - jupytext
         - black
@@ -31,7 +31,7 @@ repos:
   # pre-commit-hooks: a collection of pre-commit hooks to enforce repository hygiene
   # list of supported hooks: https://pre-commit.com/hooks.html
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: 5.0.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace # remove trailing whitespace
       - id: end-of-file-fixer # fix end of file
