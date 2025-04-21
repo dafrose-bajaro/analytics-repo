@@ -1,0 +1,30 @@
+name: 'analytics_repo'
+
+config-version: 2
+version: '0.1'
+
+profile: 'default'
+
+model-paths: [ "src/models" ]
+seed-paths: [ "src/seeds" ]
+test-paths: [ "src/tests" ]
+analysis-paths: [ "src/analysis" ]
+macro-paths: [ "src/macros" ]
+
+target-path: "src/target"
+clean-targets:
+  - "src/target"
+  - "src/dbt_modules"
+  - "src/logs"
+
+require-dbt-version: [ ">=1.0.0", "<2.0.0" ]
+
+models:
+  ae_de_play:
+    materialized: table
+    staging:
+      materialized: view
+
+data_tests:
+  +store_failures: true
+  +store_failures_as: view

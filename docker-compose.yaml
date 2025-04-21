@@ -1,0 +1,50 @@
+name: analytics-repo
+
+volumes:
+  dagster-data:
+  venv-data:
+
+services:
+  dagster:
+    build: .
+    image: dafrose/analytics-repo #replace with 
+    restart: unless-stopped
+    command:
+      - >
+        uv sync;
+        exec uv run dagster dev -h 0.0.0.0 -p 3030;
+    init: true
+    environment:
+      PYTHON_ENV: development
+      DAGSTER_HOME: /app
+      NASA_FIRMS_MAP_KEY: ${NASA_FIRMS_MAP_KEY}
+      GCP_BUCKET: ${GCP_BUCKET}
+      GCP_REGION: ${GCP_REGION}
+      GCP_ACCESS_KEY: ${GCP_ACCESS_KEY}
+      GCP_SECRET_KEY: ${GCP_SECRET_KEY}
+      GCP_ROOT_USER: ${GCP_ROOT_USER}
+      GCP_ROOT_PASSWORD: ${GCP_ROOT_PASSWORD}
+    volumes:
+      - .:/app
+      - venv-data:/app/.venv
+    ports:
+      - "3030:3030"
+    depends_on:
+      dagster-db:
+        condition: service_healthy
+
+  dagster-db:
+    image: bitnami/postgresql:16.4.0-debian-12-r8
+    restart: unless-stopped
+    environment:
+      POSTGRESQL_USERNAME: postgres
+      POSTGRESQL_PASSWORD: postgres
+      POSTGRESQL_DATABASE: dagster
+    volumes:
+      - dagster-data:/bitnami/postgresql
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres", "-d", "dagster" ]
+      start_period: 5s
+      interval: 20s
+      retries: 3
+      timeout: 2s
