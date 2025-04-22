@@ -79,7 +79,7 @@ The `src` folder is categorized into the following files and folders. <br><br>
 
 ### Folders
 
-| Folder       | Role in Dagster Pipelines        | Example |
+| Folder       | Role       | Example |
 |--------------|---------------------------------|---------------------------------------------|
 | **assets**   | Defines Dagster **assets**, which manage data ingestion, transformation, and storage. | Functions to fetch, store, and process data from APIs or cloud storage using I/O managers. |
 | **internal** | Contains **helper functions and reusable utilities** that support asset execution. | Data cleaning, metadata generation, transformation logic, and dependency handling. |
@@ -87,7 +87,7 @@ The `src` folder is categorized into the following files and folders. <br><br>
 
 ### Files
 
-| File              | Role in Dagster Pipelines |
+| File              | Role  |
 |------------------|-----------------------------------------------|
 | **dbt_project.py** | Defines how **dbt** integrates with Dagster, handling database transformations and workflow execution. |
 | **definitions.py** | Acts as the **central Dagster configuration file**, integrating assets, resources, and jobs for pipeline execution. |
