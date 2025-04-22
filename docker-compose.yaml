@@ -7,7 +7,7 @@ volumes:
 services:
   dagster:
     build: .
-    image: dafrose/analytics-repo #replace with
+    image: dafrose/analytics-repo
     restart: unless-stopped
     command:
       - >
