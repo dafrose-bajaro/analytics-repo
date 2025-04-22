@@ -77,21 +77,21 @@ The `src` folder is categorized into the following files and folders. <br><br>
 
 ### Folders
 
-| Folder      | Objective                     | Type      | Example                                     |
-|------------|------------------------------|----------|---------------------------------------------|
-| **assets**   | External data interaction    | External  | Fetching data from APIs or cloud storage    |
-| **internal** | Internal data processing     | Internal  | Data cleaning, transformations, and metadata generation |
-| **schemas**  | Data structure definitions  | Internal  | Defining field names, types, and constraints for datasets |
+| Folder       | Objective                    | Example                                     |
+|--------------|------------------------------|---------------------------------------------|
+| **assets**   | External data interaction    | Fetching data from APIs or cloud storage    |
+| **internal** | Internal data processing     | Data cleaning, transformations, and metadata generation |
+| **schemas**  | Data structure definitions   | Defining field names, types, and constraints for datasets |
 
 ### Files
 
-| File              | Purpose                                         | Function |
-|------------------|-----------------------------------------------|----------|
-| **dbt_project.py** | Manages **dbt configurations**, including settings for database connections and workflows. | Defines how dbt interacts with databases and transforms data. |
-| **definitions.py** | Integrates **assets, resources, and jobs** for the Dagster workflow. | Central hub for organizing Dagster components efficiently. |
-| **partitions.py** | Handles **partitioning logic** in the Dagster pipeline for batching data by timeframes. | Creates partitions to process data in segmented units (e.g., daily batches). |
-| **resources.py** | Manages **external resources** to link together the tech stack, using credentials/keys. | Configures storage, databases, and external dependencies like S3 and DBT. |
-| **settings.py** | Defines **environment configuration settings**, such as credentials, time zones, and constants. | Provides a centralized location for managing application-wide settings. |
+| File             | Purpose                                       |
+|------------------|-----------------------------------------------|
+| **dbt_project.py** | Defines how dbt interacts with databases and transforms data. |
+| **definitions.py** | Central hub for organizing Dagster components by integrating assets, resources, and jobs. |
+| **partitions.py** | Creates partitions to process data in segmented units (e.g., daily batching). |
+| **resources.py** | Configures storage, databases, and external dependencies like S3 and DBT using credentials and keys. |
+| **settings.py** | Provides a centralized location for managing application-wide settings such as credentials, time zones, and constants. |
 
 ---
 
