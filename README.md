@@ -59,32 +59,40 @@ Linking precipitation and dengue cases in selected Philippine cities to find tre
 
 ## Instructions for use <br><br>
 
-1. Install requirements in shell.
+1. Make sure that Docker is integrated to your OS. In Docker Desktop: Settings > Resources > WSL Integration > Select applicable.
+<br>
+
+2. Install requirements in shell. No need to run if these are already present in your system. Note that repeating installs for `curl` will install multiple versions in your local.
     ```shell
     curl https://mise.run | sh #mise
     sudo snap install task #task
-    curl -LsSf https://astral.sh/uv/install.sh | sh #uv
     ```
 <br>
 
-2. Install tools in shell. See [.mise.toml](./.mise.toml).
+2. Make sure `mise` is activated by running `mise doctor`. If `mise` is not activated, run `eval "$(mise activate bash)"`.
+    ```shell
+    mise doctor
+    eval "$(mise activate bash)"
+    ```
+<br>
+
+
+2. Install tools in shell. See [.mise.toml](./.mise.toml). `mise trust -y` checks for untrusted configuration tools. A `mise WARN` message stating "No untrusted config files found" means that config files are already trusted and no updates are needed.
     ```shell
     mise trust -y
     mise install -y
     ```
 <br>
 
-3. Initialize a `pyproject.toml` file.
+3. [REMOVE] Initialize a `pyproject.toml` file by running `uv init`. This will also produce `.python-version` and `main.py`.
     ```shell
     uv init
-    uv sync --active
     ```
 <br>
 
-4. Make sure that Docker is integrated to your OS. In Docker Desktop: Settings > Resources > WSL Integration > Select applicable.
-<br>
 
-5. Run initial [setup script](./Taskfile.yml#L8). This will install [pre-commit hooks](./.pre-commit-config.yaml) and create the [Python virtualenv](./pyproject.toml) for the project.
+
+5. [REMOVE] Run initial [setup script](./Taskfile.yml#L8)(i.e., `init` in `taskfile.yaml`). This will install [pre-commit hooks](./.pre-commit-config.yaml) and create the [Python virtualenv](./pyproject.toml) for the project. It automates creation of the following files/folders: (a) `pyproject.toml`, (b) `.python-version`, (c) `main.py`, (d) `uv.lock`, and (e) `/data/lake`.
     ```shell
     task init
     ```

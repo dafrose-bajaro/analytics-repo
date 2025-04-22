@@ -11,12 +11,13 @@ tasks:
     cmds:
       - pip install -U pre-commit
       - pre-commit install
+      - uv init
       - uv sync
       - mkdir -p ./data/lake
 
   up:
     desc: Build and start containers
-    cmd: infisical run -- docker compose up --detach --build --remove-orphans
+    cmd: docker compose up --detach --build --remove-orphans
 
   stop:
     desc: Stop containers
@@ -41,7 +42,3 @@ tasks:
   exec:
     desc: Execute a command in a running container
     cmd: docker compose exec {{ .CLI_ARGS }}
-
-  install-uv:
-    desc: Install uv
-    cmd: curl -fsSL https://astral.sh/uv/install.sh | sh

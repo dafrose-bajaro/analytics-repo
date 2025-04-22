@@ -7,7 +7,7 @@ volumes:
 services:
   dagster:
     build: .
-    image: dafrose/analytics-repo #replace with 
+    image: dafrose/analytics-repo #replace with
     restart: unless-stopped
     command:
       - >
@@ -17,13 +17,10 @@ services:
     environment:
       PYTHON_ENV: development
       DAGSTER_HOME: /app
-      NASA_FIRMS_MAP_KEY: ${NASA_FIRMS_MAP_KEY}
-      GCP_BUCKET: ${GCP_BUCKET}
-      GCP_REGION: ${GCP_REGION}
       GCP_ACCESS_KEY: ${GCP_ACCESS_KEY}
-      GCP_SECRET_KEY: ${GCP_SECRET_KEY}
-      GCP_ROOT_USER: ${GCP_ROOT_USER}
-      GCP_ROOT_PASSWORD: ${GCP_ROOT_PASSWORD}
+      GCP_BUCKET: ${GCP_BUCKET}
+      GCP_ENDPOINT: ${GCP_ENDPOINT}
+      GCP_REGION: ${GCP_REGION}
     volumes:
       - .:/app
       - venv-data:/app/.venv
