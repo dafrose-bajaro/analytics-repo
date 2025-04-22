@@ -11,8 +11,11 @@ services:
     restart: unless-stopped
     command:
       - >
-        uv sync;
-        exec uv run dagster dev -h 0.0.0.0 -p 3030;
+        set -e &&
+        cd /app &&
+        uv pip install --system . &&
+        uv sync &&
+        dagster dev -h 0.0.0.0 -p 3030;
     init: true
     environment:
       PYTHON_ENV: development

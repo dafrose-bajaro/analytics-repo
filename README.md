@@ -59,7 +59,10 @@ Linking precipitation and dengue cases in selected Philippine cities to find tre
 
 ## Instructions for use <br><br>
 
-1. Make sure that Docker is integrated to your OS. In Docker Desktop: Settings > Resources > WSL Integration > Select applicable.
+1. Make sure that Docker is integrated to your OS. In Docker Desktop: Settings > Resources > WSL Integration > Select applicable. To check if Docker is running, run `docker --version`.
+    ```shell
+    docker --version
+    ```
 <br>
 
 2. Install requirements in shell. No need to run if these are already present in your system. Note that repeating installs for `curl` will install multiple versions in your local.
@@ -69,7 +72,7 @@ Linking precipitation and dengue cases in selected Philippine cities to find tre
     ```
 <br>
 
-2. Make sure `mise` is activated by running `mise doctor`. If `mise` is not activated, run `eval "$(mise activate bash)"`.
+3. Make sure `mise` is activated by running `mise doctor`. If `mise` is not activated, run `eval "$(mise activate bash)"`.
     ```shell
     mise doctor
     eval "$(mise activate bash)"
@@ -77,22 +80,14 @@ Linking precipitation and dengue cases in selected Philippine cities to find tre
 <br>
 
 
-2. Install tools in shell. See [.mise.toml](./.mise.toml). `mise trust -y` checks for untrusted configuration tools. A `mise WARN` message stating "No untrusted config files found" means that config files are already trusted and no updates are needed.
+4. Install tools in shell. See [.mise.toml](./.mise.toml). `mise trust -y` checks for untrusted configuration tools. A `mise WARN` message stating "No untrusted config files found" means that config files are already trusted and no updates are needed.
     ```shell
     mise trust -y
     mise install -y
     ```
 <br>
 
-3. [REMOVE] Initialize a `pyproject.toml` file by running `uv init`. This will also produce `.python-version` and `main.py`.
-    ```shell
-    uv init
-    ```
-<br>
-
-
-
-5. [REMOVE] Run initial [setup script](./Taskfile.yml#L8)(i.e., `init` in `taskfile.yaml`). This will install [pre-commit hooks](./.pre-commit-config.yaml) and create the [Python virtualenv](./pyproject.toml) for the project. It automates creation of the following files/folders: (a) `pyproject.toml`, (b) `.python-version`, (c) `main.py`, (d) `uv.lock`, and (e) `/data/lake`.
+5. Run initial [setup script](./Taskfile.yml#L8)(i.e., `init` in `taskfile.yaml`). This will install [pre-commit hooks](./.pre-commit-config.yaml) and create the [Python virtualenv](./pyproject.toml) for the project. It automates creation of the following files/folders: (a) `pyproject.toml`, (b) `.python-version`, (c) `main.py`, (d) `uv.lock`, and (e) `/data/lake`.
     ```shell
     task init
     ```
@@ -101,10 +96,11 @@ Linking precipitation and dengue cases in selected Philippine cities to find tre
 6. Create a `.env` file using the template `.env.example`. You need to provide your secrets.
 <br>
 
-7. Run the [taskfile](./Taskfile.yml#L16) (i.e., container launch script).
+7. Build and start the [Docker container](./Taskfile.yml#L16=8) (i.e., `up` in `taskfile.yaml`).
     ```shell
-    task
+    task up
     ```
 <br>
 
-8. Access the Dagster UI at `http://localhost:3030`.
+8. Access the Dagster UI at `http://localhost:3030`. Both Dagster and Dagster-DB should be healthy.
+<br>
