@@ -201,3 +201,6 @@ package-lock.concurrent-update-lock
 
 # Datasets
 data/
+
+# GCP credentials
+gcp_credentials.json

@@ -17,6 +17,7 @@ services:
     environment:
       PYTHON_ENV: development
       DAGSTER_HOME: /app
+      GCP_APPLICATION_CREDENTIALS: /app/gcp_credentials.json
       GCP_ACCESS_KEY: ${GCP_ACCESS_KEY}
       GCP_BUCKET: ${GCP_BUCKET}
       GCP_ENDPOINT: ${GCP_ENDPOINT}
@@ -24,6 +25,7 @@ services:
     volumes:
       - .:/app
       - venv-data:/app/.venv
+      - ./gcp_credentials.json:/app/gcp_credentials.json:ro
     ports:
       - "3030:3030"
     depends_on:
