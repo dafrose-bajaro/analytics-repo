@@ -77,8 +77,6 @@ The `src` folder is categorized into the following files and folders. <br><br>
 
 ### Folders
 
-### Folders
-
 | Folder       | Role       | Example |
 |--------------|---------------------------------|---------------------------------------------|
 | **assets**   | Defines Dagster **assets**, which manage data ingestion, transformation, and storage. | Functions to fetch, store, and process data from APIs or cloud storage using I/O managers. |
