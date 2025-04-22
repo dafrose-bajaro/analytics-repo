@@ -1,7 +1,7 @@
 [project]
 name = "analytics-repo"
 version = "0.1.0"
-description = "Add your description here"
+description = "Analytics Repo"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -16,6 +16,7 @@ dependencies = [
     "numpy",
     "geopandas",
     "shapely",
+    "polars",
 
     # geospatial
     "rasterio",
@@ -27,6 +28,7 @@ dependencies = [
     "psycopg2-binary",
     "google-cloud-storage",
     "google-cloud-core",
+    "google-cloud-bigquery",
 
     # utils and logs
     "loguru",
@@ -40,27 +42,65 @@ dependencies = [
     "starlette",
 ]
 
+[tool.uv]
+package = false
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.build]
-packages = ["src"]
-
 [tool.dagster]
-module_name = "src"
-code_location_name = "analytics_repo"
+module_name = "src.definitions"
 
-[tool.dagster.schedules]
-timezone = "UTC"
+[tool.ruff]
+target-version = "py312"
 
-[tool.dagster.run_coordinator]
-module = "dagster.core.run_coordinator"
-class = "QueuedRunCoordinator"
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "C", "B", "UP"]
+ignore = ["E203", "E266", "E501", "E402"]
+ignore-init-module-imports = true
 
-[tool.dagster.run_launcher]
-module = "dagster.core.launcher"
-class = "DefaultRunLauncher"
+[tool.ruff.lint.mccabe]
+max-complexity = 10
 
-[tool.dagster.storage]
-postgres_db = { username = "postgres", password = "postgres", hostname = "dagster-db", db_name = "dagster", port = 5432 }
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
+
+[tool.ruff.lint.flake8-builtins]
+builtins-ignorelist = ["id"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-wrap-aliases = true
+
+[tool.ruff.lint.pep8-naming]
+classmethod-decorators = ["pydantic.validator"]
+
+[tool.sqlfluff.core]
+dialect = "duckdb"
+templater = "jinja"
+sql_file_exts = ".sql,.sql.j2,.dml,.ddl"
+max_line_length = 88
+
+[tool.sqlfluff.indentation]
+indented_joins = false
+indented_using_on = true
+template_blocks_indent = false
+
+[tool.sqlfluff.templater]
+unwrap_wrapped_queries = true
+
+[tool.sqlfluff.templater.jinja]
+apply_dbt_builtins = true
+
+[tool.sqlfluff.templater.dbt]
+project_dir = "./"
+
+[tool.sqlfluff.rules.capitalisation.keywords]
+capitalisation_policy = "upper"
+
+[tool.jupysql.SqlMagic]
+autolimit = false
+autopolars = true
+feedback = 1
+named_parameters = "enabled"

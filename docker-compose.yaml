@@ -11,17 +11,12 @@ services:
     restart: unless-stopped
     command:
       - >
-        set -e &&
-        cd /app &&
-        uv pip install --system . &&
-        uv pip install --system dagster dagster-webserver dagster-postgres &&
         uv sync &&
-        dagster dev -h 0.0.0.0 -p 3030;
+        dagster dev -h 0.0.0.0 -p 3030
     init: true
     environment:
       PYTHON_ENV: development
       DAGSTER_HOME: /app
-      GCP_APPLICATION_CREDENTIALS: /app/gcp_credentials.json
       GCP_ACCESS_KEY: ${GCP_ACCESS_KEY}
       GCP_BUCKET: ${GCP_BUCKET}
       GCP_ENDPOINT: ${GCP_ENDPOINT}
@@ -29,7 +24,7 @@ services:
     volumes:
       - .:/app
       - venv-data:/app/.venv
-      - ./gcp_credentials.json:/app/gcp_credentials.json:ro
+      - ${HOME}/.config/gcloud:/root/.config/gcloud
     ports:
       - "3030:3030"
     depends_on:
