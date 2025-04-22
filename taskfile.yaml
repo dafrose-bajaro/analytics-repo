@@ -17,7 +17,7 @@ tasks:
 
   up:
     desc: Build and start containers
-    cmd: docker compose up --build --remove-orphans
+    cmd: docker compose up --detach --build --remove-orphans
 
   stop:
     desc: Stop containers
@@ -42,3 +42,7 @@ tasks:
   exec:
     desc: Execute a command in a running container
     cmd: docker compose exec {{ .CLI_ARGS }}
+
+  list:
+    desc: List dependencies
+    cmd: docker compose exec dagster pip list

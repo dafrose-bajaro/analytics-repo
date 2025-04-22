@@ -5,14 +5,39 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    # dagster
     "dagster",
+    "dagster-graphql",
     "dagster-webserver",
     "dagster-postgres",
-    "google-cloud-storage",
+
+    # data processing
     "pandas",
+    "numpy",
     "geopandas",
+    "shapely",
+
+    # geospatial
     "rasterio",
+    "pyproj",
+    "affine",
+
+    # database and storage
+    "SQLAlchemy",
+    "psycopg2-binary",
+    "google-cloud-storage",
+    "google-cloud-core",
+
+    # utils and logs
     "loguru",
+    "python-dotenv",
+    "pydantic",
+    "PyYAML",
+    "tqdm",
+
+    # webserver
+    "uvicorn",
+    "starlette",
 ]
 
 [build-system]
@@ -24,3 +49,18 @@ packages = ["src"]
 
 [tool.dagster]
 module_name = "src"
+code_location_name = "analytics_repo"
+
+[tool.dagster.schedules]
+timezone = "UTC"
+
+[tool.dagster.run_coordinator]
+module = "dagster.core.run_coordinator"
+class = "QueuedRunCoordinator"
+
+[tool.dagster.run_launcher]
+module = "dagster.core.launcher"
+class = "DefaultRunLauncher"
+
+[tool.dagster.storage]
+postgres_db = { username = "postgres", password = "postgres", hostname = "dagster-db", db_name = "dagster", port = 5432 }
