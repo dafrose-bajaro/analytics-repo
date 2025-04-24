@@ -123,7 +123,7 @@ This is a Github repository template for analytics use cases. It uses data from 
     Note that you may need to run `uv init` if you are running a blank project. The task only syncs `uv` with the existing `pyproject.toml`.
 <br>
 
-6. Create a `.env` file using the template `.env.example`. <br><br>
+6. Create a `.env` file using the template `.env.example`. <br>
 
 7. Login to GCloud.
     ```shell
