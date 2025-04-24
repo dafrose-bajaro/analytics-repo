@@ -75,7 +75,7 @@ This is a Github repository template for analytics use cases. It uses data from 
 
 ## What is in `src`?
 
-The `src` folder is categorized into the following files and folders. <br><br>
+The `src` (source code) folder is categorized into the following files and folders. Note that `__init__.py` files are needed so that directories can work properly as Python packages. <br><br>
 
 ### Folders
 
