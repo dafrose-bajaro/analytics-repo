@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     DEFAULT_TZ: str = "Asia/Manila"
 
     GCP_ACCESS_KEY: str
+    GCP_PROJECT: str
     GCP_BUCKET: str
     GCP_ENDPOINT: str
     GCP_REGION: str
