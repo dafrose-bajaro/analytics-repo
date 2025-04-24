@@ -73,7 +73,7 @@ This is a Github repository template for analytics use cases. It uses data from 
 | Folder       | Role       |
 |--------------|---------------------------------|
 | **assets**   | ingestion, transformation, storage of datasets |
-| **internal** | functions and reusable utilities |
+| **internal** | functions and reusable utilities <small>(**utils** for helper functions and **core** for extract and transform functions)</small> |
 | **schemas**  | structure data formats in `polars` schema |
 
 #### Files
