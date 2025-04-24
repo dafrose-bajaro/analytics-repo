@@ -2,17 +2,17 @@
 
 This is a Github repository template for analytics use cases. It uses data from [Project CCHAIN](https://thinkingmachines.github.io/project-cchain/), [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/), and [AQICN](https://aqicn.org/city/chiang-mai/). It also uses data engineering configurations from Kenneth Domingo's [analytics-data-eng-play respository](https://github.com/kvdomingo/analytics-data-engg-play/tree/main).
 
-<br><br><br>
+<br><br>
 
-## Sample Use Cases <br><br>
+## Sample Use Cases <br>
 
-1) Linking precipitation and dengue cases in selected Philippine cities. Project CCHAIN datasets are in a GCS bucket (.csv) and in Google BigQuery. <br><br>
+1) Linking precipitation and dengue cases in selected Philippine cities. Project CCHAIN datasets are in a GCS bucket (.csv) and in Google BigQuery. <br>
 
 2) Linking air quality index and fires in Chiang Mai. Air quality indices come from AQICN, while fire datasets come from NASA FIRMS, both of which are accessible via API.
 
-<br><br><br>
+<br><br>
 
-## Tech stack <br><br>
+## Tech stack <br>
 - [Python 3.12](https://docs.python.org/3.12/)
 - [uv](https://docs.astral.sh/uv)
 - [Dagster](https://docs.dagster.io)
@@ -20,57 +20,63 @@ This is a Github repository template for analytics use cases. It uses data from 
 - [DuckDB](https://duckdb.org/docs/stable/)
 - [dbt](https://docs.getdbt.com/)
 
-<br><br><br>
+<br><br>
 
-## Prerequisites <br><br>
+## Prerequisites <br>
 - [Mise](https://mise.jdx.dev/getting-started.html)
 - [Docker](https://docker.com)
 
-<br><br><br>
+<br><br>
 
-## Workflow <br><br>
+## Workflow <br>
 
-(*insert schematic diagram here*) <br><br>
+(*insert schematic diagram here*)
 
-### Key files<br><br>
+<br><br>
 
-- **dagster.yaml** configures a Dagster instance by defining settings for storage, run execution, logging, sensors, and schedulers. <br><br>
+### Key files<br>
 
-- **dbt_project.yaml** configures a dbt project by defining settings like project name, version, paths, models, and other configurations. <br><br>
+- **dagster.yaml** configures a Dagster instance by defining settings for storage, run execution, logging, sensors, and schedulers. <br>
 
-- **docker-compose.yaml** defines Dagster as the main service for managing data workflows, PostgreSQL for storage, and configures environment variables. <br><br>
+- **dbt_project.yaml** configures a dbt project by defining settings like project name, version, paths, models, and other configurations. <br>
 
-- **Dockerfile** creates a Docker image to prepare the environment, install dependencies, and set configurations for the workflow to function. <br><br>
+- **docker-compose.yaml** defines Dagster as the main service for managing data workflows, PostgreSQL for storage, and configures environment variables. <br>
 
-- **.env.example** contains a template for keys and credentials. For this repo, it contains keys and credential to Google Cloud Storage where the datasets are stored. Create an actual **.env** file containing actual keys and credentials. It is worth noting that .env files should be included in gitignore so it does not get uploaded to the remote repository. <br><br>
+- **Dockerfile** creates a Docker image to prepare the environment, install dependencies, and set configurations for the workflow to function. <br>
 
-- **.gitattributes** defines attributes and behaviors for specific file types and paths. For this specific repository, we ask that Jupyter notebooks (.json) be read using Python syntax. <br><br>
+- **.env.example** contains a template for keys and credentials. For this repo, it contains keys and credential to Google Cloud Storage where the datasets are stored. Create an actual **.env** file containing actual keys and credentials. It is worth noting that .env files should be included in gitignore so it does not get uploaded to the remote repository. <br>
 
-- **.gitignore** defines files to exclude from Git tracking. It uses a Python template and ignores Windows files and the data folder. <br><br>
+- **.gitattributes** defines attributes and behaviors for specific file types and paths. For this specific repository, we ask that Jupyter notebooks (.json) be read using Python syntax. <br>
 
-- **.mise.toml** manages development environment and dependencies. <br><br>
+- **.gitignore** defines files to exclude from Git tracking. It uses a Python template and ignores Windows files and the data folder. <br>
 
-- **.pre-commit-config.yaml** automates linting, formatting, and validation. It includes the following repos: (a) ruff-pre-commit, (b) sqlfluff, (c) jupytext, and (d) pre-commit hooks. <br><br>
+- **.mise.toml** manages development environment and dependencies. <br>
 
-- **profiles.yaml** defines how dbt connects to the database. The database type is DuckDB and it allocates 16 thread for parallel processing. <br><br>
+- **.pre-commit-config.yaml** automates linting, formatting, and validation. It includes the following repos: (a) ruff-pre-commit, (b) sqlfluff, (c) jupytext, and (d) pre-commit hooks. <br>
 
-- **pyproject.toml** contains dependencies, build system, and tool configurations (based on standard package config patterns). The `hatchling` build system is a common Python build system that works well with Dagster and pyproject. <br><br>
+- **profiles.yaml** defines how dbt connects to the database. The database type is DuckDB and it allocates 16 thread for parallel processing. <br>
 
-- **README.md** provides an overview of the repository: its purpose, structure, and instructions for setup. <br><br>
+- **pyproject.toml** contains dependencies, build system, and tool configurations (based on standard package config patterns). The `hatchling` build system is a common Python build system that works well with Dagster and pyproject. <br>
 
-- **taskfile.yaml** automates tasks for container management and project workflows. Each task corresponds to a specific command that can be excuted (i.e., docker commands to initialize, setup, etc.). <br><br>
+- **README.md** provides an overview of the repository: its purpose, structure, and instructions for setup. <br>
 
-- All other files are autogenerated. <br><br>
+- **taskfile.yaml** automates tasks for container management and project workflows. Each task corresponds to a specific command that can be excuted (i.e., docker commands to initialize, setup, etc.). <br>
 
-### Key folders <br><br>
+- All other files are autogenerated.
 
-- **data** stores the datasets. Git tracking ignores this folder as this mainly includes large downloaded files. `task init` makes a directory for `../data/lake`. <br><br>
+<br><br>
 
-- **docs** contains additional files documenting details for specific files, folders, functions, and processes. <br><br>
+### Key folders <br>
 
-- **notebooks** contains Jupyter notebooks that can be run for downloading data, doing EDAs, and visualization. Categories under this folder include: (a) download, (b) processing, (c) analysis, and (d) visualization. <br><br>
+- **data** stores the datasets. Git tracking ignores this folder as this mainly includes large downloaded files. `task init` makes a directory for `../data/lake`. <br>
 
-- **src** contains Python scripts for reusable components (e.g., functions, imports, paths) used in the pipeline. It is categorized into the following files and folders. Note that `__init__.py` files are needed so that directories can work properly as Python packages. <br><br>
+- **docs** contains additional files documenting details for specific files, folders, functions, and processes. <br>
+
+- **notebooks** contains Jupyter notebooks that can be run for downloading data, doing EDAs, and visualization. Categories under this folder include: (a) download, (b) processing, (c) analysis, and (d) visualization. <br>
+
+- **tests** contains test scripts to validate the workflow. <br>
+
+- **src** contains Python scripts for reusable components (e.g., functions, imports, paths) used in the pipeline. It is categorized into the following files and folders. Note that `__init__.py` files are needed so that directories can work properly as Python packages.
 
 #### Folders
 
@@ -90,13 +96,9 @@ This is a Github repository template for analytics use cases. It uses data from 
 | **resources.py** | sets up tools and connections |
 | **settings.py** | configuration and environment variables |
 
+<br><br>
 
-- **tests** contains test scripts to validate the workflow.
-
-<br><br><br>
-
-
-## Instructions for use <br><br>
+## Instructions for use <br>
 
 1. Make sure that Docker is integrated to your OS. In Docker Desktop: Settings > Resources > WSL Integration > Select applicable. To check if Docker is running, run `docker --version`.
     ```shell
