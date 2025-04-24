@@ -21,8 +21,8 @@ class Settings(BaseSettings):
 
     NASA_FIRMS_MAP_KEY: str
     NASA_FIRMS_BASE_URL: str = "https://firms.modaps.eosdis.nasa.gov"
-    AQICN_API_KEY: str
-    AQICN_BASE_URL: str = "https://aqicn.org"
+    WAQI_TOKEN: str
+    WAQI_BASE_URL: str = "https://api.waqi.info"
 
     # tell if env is in production
     @computed_field

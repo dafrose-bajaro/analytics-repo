@@ -1,12 +1,12 @@
 # analytics-repo
 
-This is a Github repository template for analytics use cases. It uses data from [Project CCHAIN](https://thinkingmachines.github.io/project-cchain/), [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/), and [AQICN](https://aqicn.org/city/chiang-mai/). It also uses data engineering configurations from Kenneth Domingo's [analytics-data-eng-play respository](https://github.com/kvdomingo/analytics-data-engg-play/tree/main).
+This is a Github repository template for analytics use cases. It uses data from [Project CCHAIN](https://thinkingmachines.github.io/project-cchain/), [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/), and [WAQI](https://waqi.info/). It also uses data engineering configurations from Kenneth Domingo's [analytics-data-eng-play respository](https://github.com/kvdomingo/analytics-data-engg-play/tree/main).
 
 ## Sample Use Cases <br>
 
 1) Linking precipitation and dengue cases in selected Philippine cities. Project CCHAIN datasets are in a GCS bucket (.csv) and in Google BigQuery. <br>
 
-2) Linking air quality index and fires in Chiang Mai. Air quality indices come from AQICN, while fire datasets come from NASA FIRMS, both of which are accessible via API.
+2) [*WIP- historical AQI not available*] Linking air quality index and fires in Chiang Mai. Air quality indices come from WAQI, while fire datasets come from NASA FIRMS, both of which are accessible via API.
 
 ## Tech stack <br>
 - [Python 3.12](https://docs.python.org/3.12/)
