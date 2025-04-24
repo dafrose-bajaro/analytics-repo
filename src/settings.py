@@ -1,9 +1,45 @@
-# paths
-DATA_PATH_RAW = "data/01_raw/"
-DATA_PATH_PROCESSED = "data/02_processed/"
-DATA_PATH_FINAL = "data/03_final/"
-DATA_PATH_VIZ = "data/04_viz/"
+from functools import lru_cache
+from pathlib import Path
+from typing import Literal
 
-# add project-wide variables here
+from pydantic import computed_field
+from pydantic_settings import BaseSettings
 
-# add other parameters here
+
+# read environment variables
+class Settings(BaseSettings):
+    # configuration fields
+    PYTHON_ENV: Literal["development", "production"] = "production"
+    BASE_DIR: Path = Path(__file__).parent.parent
+    DEFAULT_TZ: str = "Asia/Manila"
+
+    GCP_ACCESS_KEY: str
+    GCP_BUCKET: str
+    GCP_ENDPOINT: str
+    GCP_REGION: str
+
+    NASA_FIRMS_MAP_KEY: str
+    NASA_FIRMS_BASE_URL: str = "https://firms.modaps.eosdis.nasa.gov"
+    AQICN_API_KEY: str
+    AQICN_BASE_URL: str = "https://aqicn.org"
+
+    # tell if env is in production
+    @computed_field
+    @property
+    def IS_PRODUCTION(self) -> bool:
+        return self.PYTHON_ENV == "production"
+
+    # path to DuckDB file
+    @computed_field
+    @property
+    def DUCKDB_DATABASE(self) -> str:
+        return str(self.BASE_DIR / "data/lake/duck.db")
+
+
+# settings instance: load once and reuse
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
+
+
+settings = get_settings()
