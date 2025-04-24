@@ -1,7 +1,7 @@
 from enum import Enum
 
-from dagster_dbt import DbtCliResource
-from dagster_deltalake import GCSConfig, WriteMode
+# from dagster_dbt import DbtCliResource
+from dagster_deltalake import GcsConfig, WriteMode
 from dagster_deltalake.config import ClientConfig
 from dagster_deltalake_polars import DeltaLakePolarsIOManager
 from dagster_duckdb import DuckDBResource
@@ -20,7 +20,7 @@ class IOManager(Enum):
 
 class Resource(Enum):
     DUCKDB = "duckdb"
-    DBT = "dbt"
+    # DBT = "dbt"
     GCS = "gcs"
 
 
@@ -33,15 +33,15 @@ _gcs_resource = GCSResource(
 )
 
 # main resources dictionary
-resources = {
+RESOURCES = {
     Resource.DUCKDB.value: DuckDBResource(database=settings.DUCKDB_DATABASE),
-    Resource.DBT.value: DbtCliResource(project_dir=settings.BASE_DIR),
+    # Resource.DBT.value: DbtCliResource(project_dir=settings.BASE_DIR),
     Resource.GCS.value: _gcs_resource,
     IOManager.DUCKDB.value: DuckDBPolarsIOManager(database=settings.DUCKDB_DATABASE),
     IOManager.DELTALAKE.value: DeltaLakePolarsIOManager(
         root_uri=f"gs://{settings.GCP_BUCKET}",
         mode=WriteMode.append,
-        storage_options=GCSConfig(
+        storage_options=GcsConfig(
             project=settings.GCP_PROJECT,
             service_account_key=settings.GCP_ACCESS_KEY,
             bucket=settings.GCP_BUCKET,

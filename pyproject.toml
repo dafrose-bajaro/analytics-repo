@@ -5,41 +5,38 @@ description = "Analytics Repo"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    # dagster
     "dagster",
     "dagster-graphql",
     "dagster-webserver",
     "dagster-postgres",
+    "dagster-gcp",
+    "dagster-dbt",
+    "dagster-deltalake",
+    "dagster-deltalake-polars",
+    "dagster-polars",
+    "dagster-duckdb-polars",
+    "dagster-aws",
+    "dagster-obstore",
 
-    # data processing
     "pandas",
-    "numpy",
     "geopandas",
+    "numpy",
     "shapely",
     "polars",
 
-    # geospatial
-    "rasterio",
-    "pyproj",
-    "affine",
+    "duckdb",
+    "dbt-core",
+    "dbt-duckdb",
 
-    # database and storage
-    "SQLAlchemy",
-    "psycopg2-binary",
-    "google-cloud-storage",
-    "google-cloud-core",
-    "google-cloud-bigquery",
+    "pyyaml",
+    "toml",
 
-    # utils and logs
-    "loguru",
-    "python-dotenv",
+    "httpx",
+
+    "country-converter",
+    "matplotlib",
     "pydantic",
-    "PyYAML",
-    "tqdm",
-
-    # webserver
-    "uvicorn",
-    "starlette",
+    "pydantic-settings"
 ]
 
 [tool.uv]

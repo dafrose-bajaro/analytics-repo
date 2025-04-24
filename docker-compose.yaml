@@ -12,7 +12,7 @@ services:
     command:
       - >
         uv sync &&
-        dagster dev -h 0.0.0.0 -p 3030
+        exec uv run dagster dev -h 0.0.0.0 -p 3030
     init: true
     environment:
       PYTHON_ENV: development

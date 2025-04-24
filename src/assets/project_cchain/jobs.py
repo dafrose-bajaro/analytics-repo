@@ -7,7 +7,7 @@ from src.internal.core import (
     get_csv_from_gcs_datasets,
     schema_transforms,
 )
-from src.resources import IOManager, resources
+from src.resources import RESOURCES, IOManager
 from src.schemas.climate_atmosphere import ClimateAtmosphere
 from src.schemas.disease_pidsr_totals import DiseasePidsrTotals
 from src.schemas.location import Location
@@ -37,5 +37,5 @@ def build_project_cchain_job(filename: str, schema: pl.Struct):
 
     return dg.Definitions(
         assets=[etl],
-        resources=resources,
+        resources=RESOURCES,
     )
