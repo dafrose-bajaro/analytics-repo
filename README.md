@@ -72,8 +72,8 @@ This is a Github repository template for analytics use cases. It uses data from 
 
 | Folder       | Role       |
 |--------------|---------------------------------|
-| **assets**   | ingestion, transformation, storage of datasets |
-| **internal** | functions and reusable utilities <br> **utils** for helper functions <br> **core** for extract and transform functions |
+| **assets**   | ingestion and transformation of datasets <br> - **assets**: logic to create and transform data <br> - **jobs**:  logic to run multiple assets |
+| **internal** | functions and reusable utilities <br> - **utils**: helper functions <br> - **core**: functions for extracting and transforming data |
 | **schemas**  | structure data formats in `polars` schema |
 
 #### Files

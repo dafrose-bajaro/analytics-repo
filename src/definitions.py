@@ -1,12 +1,12 @@
 from dagster import Definitions, load_assets_from_package_module
 
 from src.assets import aqicn, nasa_firms, project_cchain
-from src.assets.project_cchain.factory import CCHAIN_DATASETS, build_cchain_job
+from src.assets.project_cchain.jobs import CCHAIN_DATASETS, build_project_cchain_job
 from src.resources import resources
 
 defs = Definitions.merge(
     # create jobs for CCHAIN datasets
-    *[build_cchain_job(name, schema) for name, schema in CCHAIN_DATASETS],
+    *[build_project_cchain_job(name, schema) for name, schema in CCHAIN_DATASETS],
     # create assets for project_cchain, nasa_firms, and aqicn
     Definitions(
         assets=[
