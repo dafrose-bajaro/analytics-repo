@@ -24,7 +24,6 @@ services:
       GCP_ENDPOINT: ${GCP_ENDPOINT}
       GCP_REGION: ${GCP_REGION}
       NASA_FIRMS_MAP_KEY: ${NASA_FIRMS_MAP_KEY}
-      WAQI_TOKEN: ${WAQI_TOKEN}
     volumes:
       - .:/app
       - venv-data:/app/.venv
