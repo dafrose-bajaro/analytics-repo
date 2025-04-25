@@ -28,6 +28,7 @@ This is a Github repository template for analytics use cases. It uses data from 
 ### Setting up the environment<br>
 
 | File/Configuration | Description |
+|-------------------|-----------------------------------------------|
 | **dagster.yaml** | dagster instance configuration |
 | **docker-compose.yaml** | sets up dagster with PostgreSQL backend |
 | **Dockerfile** | create docker image |
@@ -44,6 +45,7 @@ This is a Github repository template for analytics use cases. It uses data from 
 ### Other folders
 
 | Folder | Description |
+|-------------------|-----------------------------------------------|
 | **data** | stores datasets and databases |
 | **docs** | additional documentation for env setup |
 | **notebooks** | jupyter notebooks for data processing and visualization |
