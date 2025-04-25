@@ -1,48 +1,39 @@
-import io
-
 import dagster as dg
-import polars as pl
-from dagster import MetadataValue
-from httpx import AsyncClient
+from dagster_duckdb import DuckDBResource
+from duckdb.duckdb import DuckDBPyConnection
 
-from src.partitions import daily_partitions_def
-from src.resources import IOManager
-from src.settings import settings
+from src.internal.core import emit_standard_df_metadata
 
 
-# asset # 1: waqi_raw
-# fetches raw data from WAQI API
+# asset: waqi_chiangmai_airquality
 @dg.asset(
-    partitions_def=daily_partitions_def,
-    io_manager_key=IOManager.GCS.value,
-    kinds={"gcs"},
+    group_name="waqi",
+    kinds={"duckdb"},
+    deps={"waqi_chiangmai_airquality"},
 )
-async def waqi_raw(context: dg.AssetExecutionContext) -> str:
-    async with AsyncClient(base_url=settings.WAQI_BASE_URL) as client:
-        res = await client.get(f"/api/feed/chiang-mai/?token={settings.WAQI_TOKEN}")
-        res.raise_for_status()
-        text = res.text
-
-    context.add_output_metadata({"size": MetadataValue.int(len(text))})
-    return text
-
-
-# asset #2: waqi_raw_delta
-# transforms raw data into  a polars dataframe
-@dg.asset(
-    partitions_def=daily_partitions_def,
-    io_manager_key=IOManager.DELTALAKE.value,
-    metadata={
-        "partition_expr": "measurement_date",
-    },
-    kinds={"gcs", "polars", "deltalake"},
-)
-def waqi_raw_delta(
+def waqi_chiangmai_airquality(
     context: dg.AssetExecutionContext,
-    waqi_raw: str,
-) -> pl.DataFrame:
-    with io.StringIO(waqi_raw) as buf:
-        df = pl.read_json(buf)
+    duckdb: DuckDBResource,
+):
+    conn: DuckDBPyConnection
+    with duckdb.get_connection() as conn:
+        conn.sql("""
+        CREATE OR REPLACE VIEW public.waqi_chiangmai_airquality AS (
+            SELECT
+              date,
+              pm25,
+              pm10,
+              o3,
+              no2,
+              so2,
+              co
+            FROM public.waqi_chiangmai_airquality
+            ORDER BY date
+        );
+        """)
+        df = conn.sql("SELECT * FROM public.waqi_chiangmai_airquality LIMIT 10").pl()
+        count = conn.sql(
+            "SELECT COUNT(*) AS count FROM public.waqi_chiangmai_airquality"
+        ).pl()["count"][0]
 
-    df = df.with_columns(measurement_date=pl.lit(context.partition_key).cast(pl.Date()))
-    return df
+    context.add_output_metadata(emit_standard_df_metadata(df, row_count=count))

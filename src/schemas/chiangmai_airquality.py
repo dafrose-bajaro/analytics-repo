@@ -1,6 +1,6 @@
 import polars as pl
 
-ClimateAtmosphere = pl.Struct(
+ChiangMaiAirQuality = pl.Struct(
     [
         pl.Field("date", pl.Date()),
         pl.Field("pm25", pl.Float32()),
