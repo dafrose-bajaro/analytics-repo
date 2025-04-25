@@ -27,6 +27,11 @@ from bs4 import BeautifulSoup
 # %% [markdown]
 # ## All CSV files from a URL
 
+# %% [markdown]
+# ### Project CCHAIN
+#
+# It is recommended that all files be stored in cloud storage after download. This repository assumes that these files are in the Google Cloud Storage.
+
 # %%
 # source url
 url = "https://data.humdata.org/dataset/project-cchain"
@@ -72,6 +77,11 @@ def download_csv_files(url, download_folder):
 
 # apply
 download_csv_files(url, download_folder)
+
+# %% [markdown]
+# ### WAQI
+#
+# Note that WAQI historical data needs verification for download. You can download [historical AQI data for Chiang Mai](https://aqicn.org/historical/#city:chiang-mai) from January 2016 to present and upload the CSV file to Google Cloud Storage.
 
 # %% [markdown]
 # ## Selected files only

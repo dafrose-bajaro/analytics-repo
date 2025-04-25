@@ -43,5 +43,5 @@ tasks:
     cmd: docker compose exec {{ .CLI_ARGS }}
 
   list:
-    desc: List dependencies
-    cmd: docker compose exec dagster pip list
+    desc: List packages
+    cmd: uv pip list

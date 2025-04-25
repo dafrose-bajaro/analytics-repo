@@ -1,0 +1,13 @@
+import polars as pl
+
+ClimateAtmosphere = pl.Struct(
+    [
+        pl.Field("date", pl.Date()),
+        pl.Field("pm25", pl.Float32()),
+        pl.Field("pm10", pl.Float32()),
+        pl.Field("o3", pl.Float32()),
+        pl.Field("no2", pl.Float32()),
+        pl.Field("so2", pl.Float32()),
+        pl.Field("co", pl.Float32()),
+    ]
+)
