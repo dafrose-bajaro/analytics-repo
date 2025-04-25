@@ -1,6 +1,8 @@
 # analytics-repo
 
-This is a Github repository template for analytics use cases. It uses data from [Project CCHAIN](https://thinkingmachines.github.io/project-cchain/), [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/), and [WAQI](https://waqi.info/). It also uses data engineering configurations from Kenneth Domingo's [analytics-data-eng-play repository](https://github.com/kvdomingo/analytics-data-engg-play/tree/main).
+This is a Github repository template for analytics use cases. It uses data from [Project CCHAIN](https://thinkingmachines.github.io/project-cchain/), [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/), and [WAQI](https://waqi.info/). It also uses data engineering configurations from Kenneth Domingo's [analytics-data-eng-play repository](https://github.com/kvdomingo/analytics-data-engg-play/tree/main). <br>
+
+**Status as of 20250426_0055**: Needs work on defining `nasa_firms_raw`. Materialization error shows `Generic GCS error: GCP credential error: Unable to decode service account file: invalid type: integer `4964526`, expected struct ServiceAccountCredentials at line 1 column 7`
 
 ## Sample Use Cases <br>
 
