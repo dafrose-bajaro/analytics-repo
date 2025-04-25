@@ -1,39 +1,29 @@
 import dagster as dg
-from dagster_duckdb import DuckDBResource
-from duckdb.duckdb import DuckDBPyConnection
+import polars as pl
+from dagster_gcp.gcs import GCSResource
 
-from src.internal.core import emit_standard_df_metadata
-
-
-# asset: waqi_chiangmai_airquality
-@dg.asset(
-    group_name="waqi",
-    kinds={"duckdb"},
-    deps={"waqi_chiangmai_airquality"},
+from src.core import (
+    columns_as_nullable_strings,
+    emit_standard_df_metadata,
+    get_csv_from_gcs_datasets,
 )
-def waqi_chiangmai_airquality(
-    context: dg.AssetExecutionContext,
-    duckdb: DuckDBResource,
-):
-    conn: DuckDBPyConnection
-    with duckdb.get_connection() as conn:
-        conn.sql("""
-        CREATE OR REPLACE VIEW public.waqi_chiangmai_airquality AS (
-            SELECT
-              date,
-              pm25,
-              pm10,
-              o3,
-              no2,
-              so2,
-              co
-            FROM public.waqi_chiangmai_airquality
-            ORDER BY date
-        );
-        """)
-        df = conn.sql("SELECT * FROM public.waqi_chiangmai_airquality LIMIT 10").pl()
-        count = conn.sql(
-            "SELECT COUNT(*) AS count FROM public.waqi_chiangmai_airquality"
-        ).pl()["count"][0]
+from src.resources import RESOURCES, IOManager
 
-    context.add_output_metadata(emit_standard_df_metadata(df, row_count=count))
+
+# asset 1: waqi_airquality_raw
+@dg.asset(
+    name="waqi_airquality_raw",
+    group_name="waqi",
+    kinds={"gcs", "polars", "duckdb"},
+    io_manager_key=IOManager.DUCKDB.value,
+)
+def etl(context: dg.AssetExecutionContext, gcs: GCSResource) -> pl.DataFrame:
+    filename = "chiangmai_airquality"
+    csv = get_csv_from_gcs_datasets(path=f"waqi/{filename}.csv", gcs=gcs)
+    df = pl.read_csv(csv)
+    df = columns_as_nullable_strings(df)
+    context.add_output_metadata(emit_standard_df_metadata(df))
+    return df
+
+
+definitions = dg.Definitions(assets=[etl], resources=RESOURCES)

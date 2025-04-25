@@ -10,14 +10,15 @@ from src.resources import IOManager
 from src.settings import settings
 
 
-# asset # 1: nasa_firms_raw
+# asset 1: nasa_firms_api
 # fetches raw data from NASA FIRMS API
 @dg.asset(
+    name="nasa_firms_api",
     partitions_def=daily_partitions_def,
     io_manager_key=IOManager.GCS.value,
     kinds={"gcs"},
 )
-async def nasa_firms_raw(context: dg.AssetExecutionContext) -> str:
+async def nasa_firms_api(context: dg.AssetExecutionContext) -> str:
     async with AsyncClient(base_url=settings.NASA_FIRMS_BASE_URL) as client:
         res = await client.get(
             f"/api/country/csv/{settings.NASA_FIRMS_MAP_KEY}/VIIRS_SNPP_NRT/THA/1/{context.partition_key}"
@@ -29,7 +30,7 @@ async def nasa_firms_raw(context: dg.AssetExecutionContext) -> str:
     return text
 
 
-# asset #2: nasa_firms_raw_delta
+# asset #2: nasa_firms_raw
 # transforms raw data into a polars dataframe
 @dg.asset(
     partitions_def=daily_partitions_def,
@@ -39,11 +40,11 @@ async def nasa_firms_raw(context: dg.AssetExecutionContext) -> str:
     },
     kinds={"gcs", "polars", "deltalake"},
 )
-def nasa_firms_raw_delta(
+def nasa_firms_raw(
     context: dg.AssetExecutionContext,
-    nasa_firms_raw: str,
+    nasa_firms_api: str,
 ) -> pl.DataFrame:
-    with io.StringIO(nasa_firms_raw) as buf:
+    with io.StringIO(nasa_firms_api) as buf:
         df = pl.read_csv(buf)
 
     df = df.with_columns(measurement_date=pl.lit(context.partition_key).cast(pl.Date()))

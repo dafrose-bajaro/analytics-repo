@@ -1,24 +1,59 @@
 import dagster as dg
+import polars as pl
 from dagster_duckdb import DuckDBResource
+from dagster_gcp.gcs import GCSResource
 from duckdb.duckdb import DuckDBPyConnection
 
-from src.internal.core import emit_standard_df_metadata
+from src.core import (
+    columns_as_nullable_strings,
+    emit_standard_df_metadata,
+    get_csv_from_gcs_datasets,
+)
+from src.resources import RESOURCES, IOManager
+
+# list of cchain datasets
+CCHAIN_DATASETS = [
+    "climate_atmosphere",
+    "disease_pidsr_totals",
+    "location",
+]
 
 
-# asset # 1: project_cchain_climate_atmosphere_location
+# raw assets: job to create assets from raw project cchain data
+def create_raw_cchain_assets(filename: str):
+    @dg.asset(
+        name=f"{filename}_raw",
+        group_name="project_cchain",
+        kinds={"gcs", "polars", "duckdb"},
+        io_manager_key=IOManager.DUCKDB.value,
+    )
+    def etl(context: dg.AssetExecutionContext, gcs: GCSResource) -> pl.DataFrame:
+        csv = get_csv_from_gcs_datasets(path=f"project-cchain/{filename}.csv", gcs=gcs)
+        df = pl.read_csv(csv)
+        df = columns_as_nullable_strings(df)
+        context.add_output_metadata(emit_standard_df_metadata(df))
+        return df
+
+    return dg.Definitions(
+        assets=[etl],
+        resources=RESOURCES,
+    )
+
+
+# asset 1: project_cchain_climate_atmosphere_raw
 @dg.asset(
     group_name="project_cchain",
     kinds={"duckdb"},
-    deps={"project_cchain_climate_atmosphere", "project_cchain_location"},
+    deps={"climate_atmosphere_raw", "location_raw"},
 )
-def project_cchain_climate_atmosphere_location(
+def project_cchain_climate_atmosphere_raw(
     context: dg.AssetExecutionContext,
     duckdb: DuckDBResource,
 ):
     conn: DuckDBPyConnection
     with duckdb.get_connection() as conn:
         conn.sql("""
-        CREATE OR REPLACE VIEW public.project_cchain_climate_atmosphere_location AS (
+        CREATE OR REPLACE VIEW public.project_cchain_climate_atmosphere_raw AS (
             SELECT
               ca.uuid,
               ca.date,
@@ -39,35 +74,35 @@ def project_cchain_climate_atmosphere_location(
               ca.rh,
               ca.solar_rad,
               ca.uv_rad
-            FROM public.project_cchain_climate_atmosphere ca
-            LEFT JOIN public.project_cchain_location l USING (adm4_pcode)
+            FROM public.climate_atmosphere_raw ca
+            LEFT JOIN public.location_raw l USING (adm4_pcode)
             ORDER BY date, adm4_pcode
         );
         """)
         df = conn.sql(
-            "SELECT * FROM public.project_cchain_climate_atmosphere_location LIMIT 10"
+            "SELECT * FROM public.project_cchain_climate_atmosphere_raw LIMIT 10"
         ).pl()
         count = conn.sql(
-            "SELECT COUNT(*) AS count FROM public.project_cchain_climate_atmosphere_location"
+            "SELECT COUNT(*) AS count FROM public.project_cchain_climate_atmosphere_raw"
         ).pl()["count"][0]
 
     context.add_output_metadata(emit_standard_df_metadata(df, row_count=count))
 
 
-# asset # 2: project_cchain_disease_pidsr_totals_location
+# asset 2: project_cchain_disease_pidsr_totals_raw
 @dg.asset(
     group_name="project_cchain",
     kinds={"duckdb"},
-    deps={"project_cchain_disease_pidsr_totals", "project_cchain_location"},
+    deps={"disease_pidsr_totals_raw", "location_raw"},
 )
-def project_cchain__disease_pidsr_totals_location(
+def project_cchain_disease_pidsr_totals_raw(
     context: dg.AssetExecutionContext,
     duckdb: DuckDBResource,
 ):
     conn: DuckDBPyConnection
     with duckdb.get_connection() as conn:
         conn.sql("""
-        CREATE OR REPLACE VIEW public.project_cchain_disease_pidsr_totals_location AS (
+        CREATE OR REPLACE VIEW public.project_cchain_disease_pidsr_totals_raw AS (
             SELECT
               dpt.uuid,
               dpt.date,
@@ -80,16 +115,16 @@ def project_cchain__disease_pidsr_totals_location(
               dpt.disease_icd10_code,
               dpt.disease_common_name,
               dpt.case_total
-            FROM public.project_cchain_disease_pidsr_totals dpt
-            LEFT JOIN public.project_cchain_location l USING (adm3_pcode)
+            FROM public.disease_pidsr_totals_raw dpt
+            LEFT JOIN public.location_raw l USING (adm3_pcode)
             ORDER BY date, adm3_pcode
         );
         """)
         df = conn.sql(
-            "SELECT * FROM public.project_cchain_disease_pidsr_totals_location LIMIT 10"
+            "SELECT * FROM public.project_cchain_disease_pidsr_totals_raw LIMIT 10"
         ).pl()
         count = conn.sql(
-            "SELECT COUNT(*) AS count FROM public.project_cchain_disease_pidsr_totals_location"
+            "SELECT COUNT(*) AS count FROM public.project_cchain_disease_pidsr_totals_raw"
         ).pl()["count"][0]
 
     context.add_output_metadata(emit_standard_df_metadata(df, row_count=count))

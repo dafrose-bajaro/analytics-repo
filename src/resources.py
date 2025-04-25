@@ -20,7 +20,6 @@ class IOManager(Enum):
 
 class Resource(Enum):
     DUCKDB = "duckdb"
-    # DBT = "dbt"
     GCS = "gcs"
 
 
@@ -35,7 +34,6 @@ _gcs_resource = GCSResource(
 # main resources dictionary
 RESOURCES = {
     Resource.DUCKDB.value: DuckDBResource(database=settings.DUCKDB_DATABASE),
-    # Resource.DBT.value: DbtCliResource(project_dir=settings.BASE_DIR),
     Resource.GCS.value: _gcs_resource,
     IOManager.DUCKDB.value: DuckDBPolarsIOManager(database=settings.DUCKDB_DATABASE),
     IOManager.DELTALAKE.value: DeltaLakePolarsIOManager(
