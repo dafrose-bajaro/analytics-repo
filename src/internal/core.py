@@ -22,7 +22,7 @@ from src import schemas
 # function for data fetching from gcs
 def get_csv_from_gcs_datasets(path: str, gcs: GCSResource) -> bytes:
     client: storage.Client = gcs.get_client()
-    bucket = client.bucket("project-cchain")
+    bucket = client.bucket("analytics-repo-datasets")
     blob = bucket.blob(path)
     return blob.download_as_bytes()
 
