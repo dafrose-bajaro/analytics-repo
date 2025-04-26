@@ -17,7 +17,6 @@ services:
     environment:
       PYTHON_ENV: development
       DAGSTER_HOME: /app
-      GCP_ACCESS_KEY: ${GCP_ACCESS_KEY}
       GCP_PROJECT: ${GCP_PROJECT}
       GCP_BUCKET: ${GCP_BUCKET}
       GCP_ENDPOINT: ${GCP_ENDPOINT}

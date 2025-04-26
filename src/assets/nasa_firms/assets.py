@@ -34,11 +34,11 @@ async def nasa_firms_api(context: dg.AssetExecutionContext) -> str:
 # transforms raw data into a polars dataframe
 @dg.asset(
     partitions_def=daily_partitions_def,
-    io_manager_key=IOManager.DELTALAKE.value,
+    # io_manager_key=IOManager.DELTALAKE.value,
     metadata={
         "partition_expr": "measurement_date",
     },
-    kinds={"gcs", "polars", "deltalake"},
+    kinds={"gcs", "polars"},
 )
 def nasa_firms_raw(
     context: dg.AssetExecutionContext,
