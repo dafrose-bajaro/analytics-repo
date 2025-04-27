@@ -18,7 +18,7 @@ import duckdb
 
 # %%
 # show all available schemas and tables
-conn = duckdb.connect("./data/lake/database.duckdb")
+conn = duckdb.connect("../data/lake/database.duckdb")
 conn.sql(
     """
     SELECT table_schema, table_name
@@ -30,7 +30,7 @@ conn.sql(
 
 # %% editable=true slideshow={"slide_type": ""}
 # sample query
-conn = duckdb.connect("./data/lake/database.duckdb")
+conn = duckdb.connect("../data/lake/database.duckdb")
 waqi_airquality_raw = conn.sql(
     """
     SELECT *
@@ -40,3 +40,17 @@ waqi_airquality_raw = conn.sql(
     """
 ).pl()
 waqi_airquality_raw
+
+# %%
+# sample query
+conn = duckdb.connect("../data/lake/database.duckdb")
+nasa_firms_raw = conn.sql(
+    """
+    SELECT *
+    FROM public.nasa_firms_raw
+    LIMIT 50;
+    """
+).pl()
+nasa_firms_raw
+
+# %%

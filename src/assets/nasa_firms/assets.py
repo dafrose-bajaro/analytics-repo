@@ -1,12 +1,12 @@
 import re
 
 import dagster as dg
-import duckdb
 import gcsfs
 import polars as pl
 from dagster import MetadataValue
 from httpx import AsyncClient
 
+from src.core import get_clean_csv_file
 from src.partitions import daily_partitions_def
 from src.resources import IOManager
 from src.settings import settings
@@ -37,18 +37,22 @@ async def nasa_firms_api(context: dg.AssetExecutionContext) -> str:
 @dg.asset(
     kinds={"gcs", "polars"},
     deps={"nasa_firms_api"},
+    io_manager_key=IOManager.DUCKDB.value,
 )
-def nasa_firms_raw(
-    context: dg.AssetExecutionContext,
-) -> pl.DataFrame:
+def nasa_firms_raw(context: dg.AssetExecutionContext) -> pl.DataFrame:
     gcs_path = "analytics-repo-datasets/dagster/nasa_firms_api"
     fs = gcsfs.GCSFileSystem()
     file_list = fs.ls(gcs_path)
 
     dfs = []
     for file in file_list:
-        with fs.open(file, "r") as f:
-            df = pl.read_csv(f)
+        try:
+            # get clean csv files from gcs (nasa_firm_api produces text files)
+            clean_file = get_clean_csv_file(fs, file)
+            if clean_file is None:
+                print(f"Skipping file with no valid CSV header: {file}")
+                continue
+            df = pl.read_csv(clean_file)
 
             # create new column with date extracted from filename
             match = re.search(r"(\d{4}-\d{2}-\d{2})", file)
@@ -62,29 +66,15 @@ def nasa_firms_raw(
 
             dfs.append(df)
 
+        except Exception as e:
+            print(f"Error reading {file}: {e}")
+
+    if not dfs:
+        raise ValueError(
+            "No valid DataFrames were created. Please check the input files."
+        )
+
     combined_df = pl.concat(dfs, how="vertical")
     combined_df = combined_df.sort("measurement_date")
-
-    # remove non-ASCII and problematic characters from column names
-    def clean_col(col):
-        return re.sub(r"[^a-zA-Z0-9_]", "_", col)
-
-    cleaned_columns = [clean_col(col) for col in combined_df.columns]
-    if len(set(cleaned_columns)) != len(cleaned_columns):
-        raise ValueError("Duplicate column names found after cleaning!")
-    if any(col == "" for col in cleaned_columns):
-        raise ValueError("Empty column name found after cleaning!")
-    combined_df.columns = cleaned_columns
-
-    # write to duckdb
-    conn = duckdb.connect(settings.DUCKDB_DATABASE)
-    conn.execute("CREATE SCHEMA IF NOT EXISTS public;")
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS public.nasa_firms_raw AS SELECT * FROM combined_df LIMIT 0"
-    )
-    conn.execute("DELETE FROM public.nasa_firms_raw")
-    conn.register("combined_df", combined_df.to_arrow())
-    conn.execute("INSERT INTO public.nasa_firms_raw SELECT * FROM combined_df")
-    conn.close()
 
     return combined_df

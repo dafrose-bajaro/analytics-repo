@@ -1,5 +1,7 @@
+import io
 from datetime import date
 
+import chardet
 import polars as pl
 from dagster import (
     MetadataValue,
@@ -53,3 +55,16 @@ def emit_standard_df_metadata(
             ),
         ),
     }
+
+
+# function for getting csv file from nasa_firms text
+def get_clean_csv_file(fs, file):
+    with fs.open(file, "rb") as f:
+        raw_data = f.read()
+        detected_encoding = chardet.detect(raw_data)["encoding"] or "utf-8"
+        text = raw_data.decode(detected_encoding, errors="replace")
+        idx = text.find("country_id")
+        if idx == -1:
+            return None
+        clean_text = text[idx:]
+        return io.StringIO(clean_text)
