@@ -71,7 +71,7 @@ def nasa_firms_raw(context: dg.AssetExecutionContext) -> pl.DataFrame:
 
     if not dfs:
         raise ValueError(
-            "No valid DataFrames were created. Please check the input files."
+            "No valid df created."
         )
 
     combined_df = pl.concat(dfs, how="vertical")
