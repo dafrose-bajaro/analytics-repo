@@ -2,6 +2,8 @@
 
 This is a Github repository template for analytics use cases. It uses data from [Project CCHAIN](https://thinkingmachines.github.io/project-cchain/), [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/), and [WAQI](https://waqi.info/). It also uses data engineering configurations from Kenneth Domingo's [analytics-data-eng-play repository](https://github.com/kvdomingo/analytics-data-engg-play/tree/main). <br>
 
+<span style="color: red;"> Status as of 20250427:</span> Need to create assets for `clean` dataset
+
 ## Sample Use Cases <br>
 
 1) Linking precipitation and dengue cases in selected Philippine cities. Project CCHAIN datasets are in GCS(.csv). <br>
