@@ -24,9 +24,11 @@ dependencies = [
     "shapely",
     "polars",
     "jupyter",
+    "regex",
 
     "beautifulsoup4",
     "requests",
+    "gcsfs",
 
     "duckdb",
     "dbt-core",
