@@ -25,7 +25,6 @@ class Resource(Enum):
 # gcp configuration
 _gcs_resource = GCSResource(
     project=settings.GCP_PROJECT,
-    service_account_key=settings.GCP_ACCESS_KEY,
     endpoint_url=settings.GCP_ENDPOINT,
     region=settings.GCP_REGION,
 )

@@ -13,7 +13,6 @@ class Settings(BaseSettings):
     BASE_DIR: Path = Path(__file__).parent.parent
     DEFAULT_TZ: str = "Asia/Manila"
 
-    GCP_ACCESS_KEY: str
     GCP_PROJECT: str
     GCP_BUCKET: str
     GCP_ENDPOINT: str
@@ -32,7 +31,7 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def DUCKDB_DATABASE(self) -> str:
-        return str(self.BASE_DIR / "data/lake/duck.db")
+        return str(self.BASE_DIR / "data/lake/database.duckdb")
 
 
 # settings instance: load once and reuse

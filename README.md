@@ -16,7 +16,7 @@ This is a Github repository template for analytics use cases. It uses data from 
 - [DuckDB](https://duckdb.org/docs/stable/)
 
 ## Prerequisites <br>
-- [Mise](https://mise.jdx.dev/getting-started.html)
+- [mise](https://mise.jdx.dev/getting-started.html)
 - [Docker](https://docker.com)
 
 ## Workflow <br>
@@ -62,7 +62,7 @@ This is a Github repository template for analytics use cases. It uses data from 
 | **resources.py** | sets up tools and connections |
 | **settings.py** | configuration and environment variables |
 
-## Instructions for use <br>
+## Setting up the repo <br>
 
 1. Make sure that Docker is integrated to your OS. In Docker Desktop: Settings > Resources > WSL Integration > Select applicable. To check if Docker is running, run `docker --version`.
     ```shell
@@ -122,5 +122,69 @@ This is a Github repository template for analytics use cases. It uses data from 
 10. To stop the running container, press `Ctrl+C` and stop the container.
     ```shell
     task down
+    ```
+<br>
+
+## Running the container <br>
+
+1. Open Docker Desktop and make sure the container is running. To check if Docker is running, run `docker --version`.
+    ```shell
+    docker --version
+    ```
+<br>
+
+2. Activate `mise`.
+    ```shell
+    eval "$(mise activate bash)"
+    ```
+<br>
+
+3. Build and start the Docker container.
+    ```shell
+    task up
+    ```
+<br>
+
+4. Run Docker tasks accordingly.
+    ```shell
+    task logs
+    task stop
+    task down
+    task restart
+    ```
+<br>
+
+## Opening notebooks <br>
+
+1. Start a Jupyter server
+    ```shell
+    uv run jupyter lab
+    ```
+<br>
+
+2. Open the Jupyter UI at `http://localhost:8888`. Click on the local host link provided in the terminal so that the token is already attached to the link.
+<br>
+
+3. Create a `.ipynb` notebook.
+<br>
+
+4. Start querying the data.
+    ```python
+    import duckdb
+    ```
+    ```python
+    conn = duckdb.connect("./data/lake/db.duckdb")
+    conn.sql("""
+        SELECT *
+        FROM analytics_repo.waqi_airquality_raw
+        ORDER BY date
+        LIMIT 50;
+        """).pl()
+    ```
+<br>
+
+5. If you encounter any issues in accessing the database, make sure that the `.duckdb` file is owned by the default user of your system. You can reassign ownership through the following command:
+    ```shell
+    sudo chown ${USER}:${USER} ${DIRECTORY_TO_DUCKDBFILE}
     ```
 <br>
