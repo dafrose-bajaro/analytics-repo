@@ -4,9 +4,11 @@ import dagster as dg
 import gcsfs
 import polars as pl
 from dagster import MetadataValue
+from dagster_duckdb import DuckDBResource
+from duckdb.duckdb import DuckDBPyConnection
 from httpx import AsyncClient
 
-from src.core import get_clean_csv_file
+from src.core import emit_standard_df_metadata, get_clean_csv_file
 from src.partitions import daily_partitions_def
 from src.resources import IOManager
 from src.settings import settings
@@ -70,11 +72,55 @@ def nasa_firms_raw(context: dg.AssetExecutionContext) -> pl.DataFrame:
             print(f"Error reading {file}: {e}")
 
     if not dfs:
-        raise ValueError(
-            "No valid df created."
-        )
+        raise ValueError("No valid df created.")
 
     combined_df = pl.concat(dfs, how="vertical")
     combined_df = combined_df.sort("measurement_date")
 
     return combined_df
+
+
+# asset #2: nasa_firms_clean
+# sets proper schema for the dataframe
+@dg.asset(
+    kinds={"duckdb"},
+    deps={"nasa_firms_raw"},
+    io_manager_key=IOManager.DUCKDB.value,
+)
+def nasa_firms_clean(
+    context: dg.AssetExecutionContext,
+    duckdb: DuckDBResource,
+):
+    conn: DuckDBPyConnection
+    with duckdb.get_connection() as conn:
+        conn.sql("""
+        CREATE OR REPLACE VIEW public.nasa_firms_clean AS (
+            SELECT
+                CAST(____S______X_S__country_id AS VARCHAR) AS country_id,
+                CAST(latitude AS FLOAT) AS latitude,
+                CAST(longitude AS FLOAT) AS longitude,
+                ST_GEOMFROMTEXT(CONCAT('POINT(', longitude, ' ', latitude, ')')) AS geometry,
+                CAST(bright_ti4 AS FLOAT) AS bright_ti4,
+                CAST(scan AS FLOAT) AS scan,
+                CAST(track AS FLOAT) AS track,
+                CAST(acq_date AS DATE) AS acq_date,
+                CAST(acq_time AS TIME) AS acq_time,
+                CAST(acq_date AS DATE) + CAST(acq_time AS TIME) AS acq_datetime,
+                CAST(satellite AS VARCHAR) AS satellite,
+                CAST(instrument AS VARCHAR) AS instrument,
+                CAST(confidence AS VARCHAR) AS confidence,
+                CAST(version AS VARCHAR) AS version,
+                CAST(bright_ti5 AS FLOAT) AS bright_ti5,
+                CAST(frp AS FLOAT) AS frp,
+                CAST(daynight AS VARCHAR) AS daynight,
+                CAST(measurement_date AS DATE) AS measurement_date
+            FROM public.nasa_firms_raw
+            ORDER BY acq_datetime
+        );
+        """)
+        df = conn.sql("SELECT * FROM public.nasa_firms_clean LIMIT 10").pl()
+        count = conn.sql("SELECT COUNT(*) AS count FROM public.nasa_firms_clean").pl()[
+            "count"
+        ][0]
+
+    context.add_output_metadata(emit_standard_df_metadata(df, row_count=count))

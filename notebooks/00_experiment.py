@@ -7,20 +7,31 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.17.0
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: sandbox
 #     language: python
 #     name: python3
 # ---
 
-# %%
+# %% [markdown] editable=true slideshow={"slide_type": ""}
+# # Experimental Notebook
+# This notebook serves as a dump for experimentation for tables in DuckDB.
+
+# %% [markdown] editable=true slideshow={"slide_type": ""}
+# ## Import packages
+
+# %% editable=true slideshow={"slide_type": ""}
 # install duckdb package
 import duckdb
 
+# establish connection to duckdb database
 conn = duckdb.connect("../data/lake/database.duckdb")
 
-# %%
+# %% [markdown] editable=true slideshow={"slide_type": ""}
+# ## List available tables
+
+# %% editable=true slideshow={"slide_type": ""}
 # show all available schemas and tables
-tables_list = conn.sql(
+conn.sql(
     """
     SELECT table_schema, table_name
     FROM information_schema.tables
@@ -28,11 +39,54 @@ tables_list = conn.sql(
     ORDER BY table_schema, table_name;
 """
 ).pl()
-tables_list
+
+# %% [markdown] editable=true slideshow={"slide_type": ""}
+# ## NASA FIRMS
 
 # %% editable=true slideshow={"slide_type": ""}
 # sample query
-waqi_airquality_raw = conn.sql(
+conn.sql(
+    """
+    SELECT *
+    FROM public.nasa_firms_raw
+    LIMIT 50;
+    """
+).pl()
+
+# %% editable=true slideshow={"slide_type": ""}
+# sample query
+conn.sql(
+    """
+    SELECT
+        CAST(____S______X_S__country_id AS VARCHAR) AS country_id,
+        CAST(latitude AS FLOAT) AS latitude,
+        CAST(longitude AS FLOAT) AS longitude,
+        ST_GEOMFROMTEXT(CONCAT('POINT(', longitude, ' ', latitude, ')')) AS geometry,
+        CAST(bright_ti4 AS FLOAT) AS bright_ti4,
+        CAST(scan AS FLOAT) AS scan,
+        CAST(track AS FLOAT) AS track,
+        CAST(acq_date AS DATE) AS acq_date,
+        CAST(acq_time AS TIME) AS acq_time,
+        CAST(acq_date AS DATE) + CAST(acq_time AS TIME) AS acq_datetime,
+        CAST(satellite AS VARCHAR) AS satellite,
+        CAST(instrument AS VARCHAR) AS instrument,
+        CAST(confidence AS VARCHAR) AS confidence,
+        CAST(version AS VARCHAR) AS version,
+        CAST(bright_ti5 AS FLOAT) AS bright_ti5,
+        CAST(frp AS FLOAT) AS frp,
+        CAST(daynight AS VARCHAR) AS daynight,
+        CAST(measurement_date AS DATE) AS measurement_date
+    FROM public.nasa_firms_raw
+    ORDER BY acq_datetime;
+    """
+).pl()
+
+# %% [markdown] editable=true slideshow={"slide_type": ""}
+# ## WAQI Air Quality
+
+# %% editable=true slideshow={"slide_type": ""}
+# sample query
+conn.sql(
     """
     SELECT *
     FROM public.waqi_airquality_raw
@@ -40,22 +94,12 @@ waqi_airquality_raw = conn.sql(
     LIMIT 50;
     """
 ).pl()
-waqi_airquality_raw
 
-# %%
-# sample query
-nasa_firms_raw = conn.sql(
-    """
-    SELECT *
-    FROM public.nasa_firms_raw
-    LIMIT 50;
-    """
-).pl()
-nasa_firms_raw
+# %% [markdown] editable=true slideshow={"slide_type": ""}
+# ## Project CCHAIN
 
-# %%
+# %% editable=true slideshow={"slide_type": ""}
 # sample query
-conn = duckdb.connect("../data/lake/database.duckdb")
 project_cchain_climate_atmosphere_raw = conn.sql(
     """
     SELECT *
@@ -64,11 +108,10 @@ project_cchain_climate_atmosphere_raw = conn.sql(
     LIMIT 50;
     """
 ).pl()
-project_cchain_climate_atmosphere_raw
 
 # %%
 # sample query
-project_cchain_climate_atmosphere_clean = conn.sql(
+conn.sql(
     """
     SELECT
         CAST(uuid AS VARCHAR) AS uuid,
@@ -95,10 +138,9 @@ project_cchain_climate_atmosphere_clean = conn.sql(
     LIMIT 50;
     """
 ).pl()
-project_cchain_climate_atmosphere_clean
 
 # %%
-project_cchain_climate_atmospher_filter = conn.sql(
+conn.sql(
     """
     SELECT *
     FROM public.project_cchain_climate_atmosphere_raw
@@ -106,11 +148,10 @@ project_cchain_climate_atmospher_filter = conn.sql(
     LIMIT 50
     """
 ).pl()
-project_cchain_climate_atmosphere_filter
 
 # %%
 # sample query
-project_cchain_disease_pidsr_totals_clean = conn.sql(
+conn.sql(
     """
     SELECT
         CAST(uuid AS VARCHAR) AS uuid,
@@ -126,9 +167,8 @@ project_cchain_disease_pidsr_totals_clean = conn.sql(
         CAST(case_total AS INT) AS case_total
     FROM public.project_cchain_disease_pidsr_totals_raw
     WHERE case_total != 0
-    ORDER BY date, adm3_pcode    
+    ORDER BY date, adm3_pcode
     """
 ).pl()
-project_cchain_disease_pidsr_totals_clean
 
 # %%
