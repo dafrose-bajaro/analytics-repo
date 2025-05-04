@@ -19,11 +19,12 @@
 # %% [markdown] editable=true slideshow={"slide_type": ""}
 # ## Import packages
 
-# %% editable=true slideshow={"slide_type": ""}
-# install duckdb package
+# %%
+# install packages and establish database connections
 import duckdb
+import geopandas as gpd
+from shapely import wkt
 
-# establish connection to duckdb database
 conn = duckdb.connect("../data/lake/database.duckdb")
 
 # %% [markdown] editable=true slideshow={"slide_type": ""}
@@ -43,31 +44,37 @@ conn.sql(
 # %% [markdown] editable=true slideshow={"slide_type": ""}
 # ## NASA FIRMS
 
-# %% editable=true slideshow={"slide_type": ""}
+# %%
 # sample query
 conn.sql(
     """
     SELECT *
     FROM public.nasa_firms_raw
-    LIMIT 50;
+    ORDER BY acq_date, acq_time
     """
 ).pl()
 
-# %% editable=true slideshow={"slide_type": ""}
+# %%
 # sample query
-conn.sql(
+df = conn.sql(
     """
     SELECT
         CAST(____S______X_S__country_id AS VARCHAR) AS country_id,
         CAST(latitude AS FLOAT) AS latitude,
         CAST(longitude AS FLOAT) AS longitude,
-        ST_GEOMFROMTEXT(CONCAT('POINT(', longitude, ' ', latitude, ')')) AS geometry,
+        CONCAT('POINT (', longitude, ' ', latitude,')') AS geometry,
         CAST(bright_ti4 AS FLOAT) AS bright_ti4,
         CAST(scan AS FLOAT) AS scan,
         CAST(track AS FLOAT) AS track,
-        CAST(acq_date AS DATE) AS acq_date,
-        CAST(acq_time AS TIME) AS acq_time,
-        CAST(acq_date AS DATE) + CAST(acq_time AS TIME) AS acq_datetime,
+        STRPTIME(CONCAT(acq_date, ' ',
+            CASE
+                WHEN LENGTH(acq_time) = 4 THEN CONCAT(SUBSTR(acq_time, 1, 2), ':', SUBSTR(acq_time, 3, 2), ':00')
+                WHEN LENGTH(acq_time) = 3 THEN CONCAT('0', SUBSTR(acq_time, 1, 1), ':', SUBSTR(acq_time, 2, 2), ':00')
+                WHEN LENGTH(acq_time) = 2 THEN CONCAT('00:', acq_time, ':00')
+                ELSE NULL
+            END),
+            '%Y-%m-%d %H:%M:%S'
+        ) AS acq_datetime,
         CAST(satellite AS VARCHAR) AS satellite,
         CAST(instrument AS VARCHAR) AS instrument,
         CAST(confidence AS VARCHAR) AS confidence,
@@ -80,6 +87,13 @@ conn.sql(
     ORDER BY acq_datetime;
     """
 ).pl()
+
+# convert to pandas
+df = df.to_pandas()
+
+# create geometries in geodataframe
+df["geometry"] = df["geometry"].apply(wkt.loads)
+gpd.GeoDataFrame(df, geometry="geometry")
 
 # %% [markdown] editable=true slideshow={"slide_type": ""}
 # ## WAQI Air Quality
@@ -100,7 +114,7 @@ conn.sql(
 
 # %% editable=true slideshow={"slide_type": ""}
 # sample query
-project_cchain_climate_atmosphere_raw = conn.sql(
+conn.sql(
     """
     SELECT *
     FROM public.project_cchain_climate_atmosphere_raw

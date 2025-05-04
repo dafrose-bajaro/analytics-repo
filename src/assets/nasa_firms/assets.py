@@ -37,6 +37,7 @@ async def nasa_firms_api(context: dg.AssetExecutionContext) -> str:
 # asset #2: nasa_firms_raw
 # transforms raw data into a polars dataframe
 @dg.asset(
+    group_name="nasa_firms",
     kinds={"gcs", "polars"},
     deps={"nasa_firms_api"},
     io_manager_key=IOManager.DUCKDB.value,
@@ -82,11 +83,7 @@ def nasa_firms_raw(context: dg.AssetExecutionContext) -> pl.DataFrame:
 
 # asset #2: nasa_firms_clean
 # sets proper schema for the dataframe
-@dg.asset(
-    kinds={"duckdb"},
-    deps={"nasa_firms_raw"},
-    io_manager_key=IOManager.DUCKDB.value,
-)
+@dg.asset(group_name="nasa_firms", kinds={"duckdb"}, deps={"nasa_firms_raw"})
 def nasa_firms_clean(
     context: dg.AssetExecutionContext,
     duckdb: DuckDBResource,
@@ -99,13 +96,19 @@ def nasa_firms_clean(
                 CAST(____S______X_S__country_id AS VARCHAR) AS country_id,
                 CAST(latitude AS FLOAT) AS latitude,
                 CAST(longitude AS FLOAT) AS longitude,
-                ST_GEOMFROMTEXT(CONCAT('POINT(', longitude, ' ', latitude, ')')) AS geometry,
+                CONCAT('POINT (', longitude, ' ', latitude,')') AS geometry,
                 CAST(bright_ti4 AS FLOAT) AS bright_ti4,
                 CAST(scan AS FLOAT) AS scan,
                 CAST(track AS FLOAT) AS track,
-                CAST(acq_date AS DATE) AS acq_date,
-                CAST(acq_time AS TIME) AS acq_time,
-                CAST(acq_date AS DATE) + CAST(acq_time AS TIME) AS acq_datetime,
+                STRPTIME(CONCAT(acq_date, ' ',
+                    CASE
+                        WHEN LENGTH(acq_time) = 4 THEN CONCAT(SUBSTR(acq_time, 1, 2), ':', SUBSTR(acq_time, 3, 2), ':00')
+                        WHEN LENGTH(acq_time) = 3 THEN CONCAT('0', SUBSTR(acq_time, 1, 1), ':', SUBSTR(acq_time, 2, 2), ':00')
+                        WHEN LENGTH(acq_time) = 2 THEN CONCAT('00:', acq_time, ':00')
+                        ELSE NULL
+                    END),
+                    '%Y-%m-%d %H:%M:%S'
+                ) AS acq_datetime,
                 CAST(satellite AS VARCHAR) AS satellite,
                 CAST(instrument AS VARCHAR) AS instrument,
                 CAST(confidence AS VARCHAR) AS confidence,
