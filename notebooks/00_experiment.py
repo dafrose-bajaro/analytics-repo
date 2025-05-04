@@ -7,7 +7,7 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.17.0
 #   kernelspec:
-#     display_name: sandbox
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -106,6 +106,25 @@ conn.sql(
     FROM public.waqi_airquality_raw
     ORDER BY date
     LIMIT 50;
+    """
+).pl()
+
+# %%
+# sample query
+conn.sql(
+    """
+    SELECT
+        CAST(STRPTIME(date, '%d-%b-%y') AS DATE) AS date,
+        CAST(NULLIF(TRIM(pm25), '') AS FLOAT) AS pm25,
+        CAST(NULLIF(TRIM(pm10), '') AS FLOAT) AS pm10,
+        CAST(NULLIF(TRIM(o3), '') AS FLOAT) AS o3,
+        CAST(NULLIF(TRIM(no2), '') AS FLOAT) AS no2,
+        CAST(NULLIF(TRIM(so2), '') AS FLOAT) AS so2,
+        CAST(NULLIF(TRIM(co), '') AS FLOAT) AS co
+    FROM public.waqi_airquality_raw
+    WHERE pm25 IS NOT NULL
+    ORDER BY date
+    --LIMIT 50;
     """
 ).pl()
 

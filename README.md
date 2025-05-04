@@ -186,8 +186,14 @@ This is a Github repository template for analytics use cases. It uses data from 
     ```
 <br>
 
-5. If you encounter any issues in accessing the database, make sure that the `.duckdb` file is owned by the default user of your system. You can reassign ownership through the following command:
-    ```shell
-    sudo chown ${USER}:${USER} ${DIRECTORY_TO_DUCKDBFILE}
-    ```
+5. Some common troubleshooting commands for the duckdb database:
+    - If you encounter any issues in accessing the database, make sure that the `.duckdb` file is owned by the default user of your system. You can reassign ownership through the following command:
+        ```shell
+        sudo chown ${USER}:${USER} ${DIRECTORY_TO_DUCKDBFILE}
+        ```
+    - If you encounter a DuckDB lock error (i.e., IO Error on conflicting lock), consider dropping the corrupted tables and/or killing duckdb processes. The PID number is usually shown after the first command is run in bash.
+        ```shell
+        duckdb <absolute file path> "DROP VIEW IF EXISTS public.<table name>;"
+        kill -9 <PID number>
+        ```
 <br>
