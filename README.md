@@ -2,11 +2,11 @@
 
 This is a Github repository template for analytics use cases. It uses data from [Project CCHAIN](https://thinkingmachines.github.io/project-cchain/), [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/), and [WAQI](https://waqi.info/). It also uses data engineering configurations from Kenneth Domingo's [analytics-data-eng-play repository](https://github.com/kvdomingo/analytics-data-engg-play/tree/main). <br>
 
-<span style="color: red;"> Status as of 20250427:</span> Need to create assets for `clean` dataset.
+<span style="color: red;"> Status as of 20250504:</span> Pending features: (a) notebooks for analytics and visualization, (b) historical data for NASA FIRMS, (c) integrating dbt and deltalake, and (d) tests.
 
 ## Sample Use Cases <br>
 
-1) Linking precipitation and dengue cases in selected Philippine cities. Project CCHAIN datasets are in GCS(.csv). <br>
+1) Linking precipitation and dengue cases in selected Philippine cities. Project CCHAIN datasets are in GCS (.csv). <br>
 
 2) Linking air quality index and fires in Chiang Mai. Air quality indices come from WAQI (stored in GCS), while hotspot/fire data comes from NASA FIRMS (accessible via API).
 
@@ -16,6 +16,7 @@ This is a Github repository template for analytics use cases. It uses data from 
 - [Dagster](https://docs.dagster.io)
 - [Polars](https://docs.pola.rs)
 - [DuckDB](https://duckdb.org/docs/stable/)
+- WIP: dbt and delta
 
 ## Prerequisites <br>
 - [mise](https://mise.jdx.dev/getting-started.html)
@@ -48,7 +49,7 @@ This is a Github repository template for analytics use cases. It uses data from 
 |-------------------|-----------------------------------------------|
 | **data** | stores datasets and databases |
 | **docs** | additional documentation for env setup |
-| **notebooks** | jupyter notebooks for data processing and visualization |
+| **notebooks** | jupyter notebooks for experiments, data processing, and visualization |
 | **tests** | test scripts to validate the workflow |
 
 #### Source code (src)
@@ -57,7 +58,7 @@ This is a Github repository template for analytics use cases. It uses data from 
 
 | File/ Folder         | Description  |
 |-------------------|-----------------------------------------------|
-|**assets**| creating dagster assets (and jobs) |
+| **assets** | creating dagster assets (and jobs) |
 | **core.py** | functions for extracting from GCS and creating metadata |
 | **definitions.py** | how everything (tools) works together |
 | **partitions.py** | division of data into time segments |
