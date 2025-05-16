@@ -25,6 +25,10 @@ dependencies = [
     "polars",
     "jupyter",
     "regex",
+    "matplotlib",
+    "seaborn",
+    "selenium",
+    "scikit-learn",
 
     "beautifulsoup4",
     "requests",
@@ -41,7 +45,6 @@ dependencies = [
     "httpx",
 
     "country-converter",
-    "matplotlib",
     "pydantic",
     "pydantic-settings"
 ]

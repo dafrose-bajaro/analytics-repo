@@ -20,9 +20,10 @@
 # ## Import packages
 
 # %%
-# install packages and establish database connections
+# install packages
 import duckdb
 
+# establish database connections
 conn = duckdb.connect("../data/lake/database.duckdb")
 
 # %% [markdown] editable=true slideshow={"slide_type": ""}
