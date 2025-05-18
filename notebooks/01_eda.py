@@ -366,3 +366,5 @@ for adm3 in adm3_en_list:
     plt.yticks(fontsize=6)
     plt.legend()
     plt.show()
+
+# %%
