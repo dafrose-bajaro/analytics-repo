@@ -97,12 +97,21 @@ firms_chiang_mai_df = firms_chiang_mai_df.set_crs(epsg=4326)
 firms_chiang_mai_df = firms_chiang_mai_df[
     ["acq_datetime", "bright_ti4", "frp", "geometry"]
 ]
+firms_chiang_mai_df = firms_chiang_mai_df[
+    (firms_chiang_mai_df["acq_datetime"] >= "2025-02-01")
+    & (firms_chiang_mai_df["acq_datetime"] < "2025-04-01")
+]
 
 firms_chiang_mai_df.head(5)
 
 # %%
 # visualize
-firms_chiang_mai_df.explore(column="bright_ti4", cmap="RdYlBu_r")
+firms_chiang_mai_df.explore(
+    column="bright_ti4", cmap="viridis", tiles="CartoDB dark_matter"
+)
+
+# %% [markdown]
+# ### WAQI
 
 # %%
 # waqi_airquality data
@@ -113,6 +122,18 @@ waqi_df = conn.sql(
     """
 ).fetchdf()
 
+waqi_df = waqi_df[["date", "pm25"]]
+waqi_df = waqi_df[(waqi_df["date"] >= "2025-02-01") & (waqi_df["date"] < "2025-04-01")]
+waqi_df = waqi_df.sort_values(by="date", ascending=True)
+
 waqi_df.head(5)
+
+# %% [markdown]
+# ## Processing
+#
+# We want to get:
+#
+# - average temp of hotspots per day
+# - number of hotspots per day
 
 # %%
