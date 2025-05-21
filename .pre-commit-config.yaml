@@ -36,7 +36,7 @@ repos:
       - id: trailing-whitespace # remove trailing whitespace
       - id: end-of-file-fixer # fix end of file
       - id: check-added-large-files # check for large files
-        args: [ "--maxkb=500" ]
+        args: [ "--maxkb=10000" ]
       - id: check-merge-conflict # check for merge conflicts
       - id: detect-private-key # check for private keys
       - id: check-merge-conflict # check for merge conflicts

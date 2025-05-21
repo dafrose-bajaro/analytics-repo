@@ -19,9 +19,7 @@ dependencies = [
     "dagster-obstore",
 
     "pandas",
-    "geopandas",
     "numpy",
-    "shapely",
     "polars",
     "jupyter",
     "regex",
@@ -30,6 +28,11 @@ dependencies = [
     "selenium",
     "scikit-learn",
     "statsmodels",
+
+    "geopandas",
+    "shapely",
+    "folium",
+    "mapclassify",
 
     "beautifulsoup4",
     "requests",
