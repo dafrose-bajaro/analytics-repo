@@ -26,6 +26,9 @@ import duckdb
 
 # geospatial
 import geopandas as gpd
+import matplotlib.pyplot as plt
+import pandas as pd
+import statsmodels.api as sm
 from shapely import wkt
 
 warnings.filterwarnings("ignore")
@@ -49,8 +52,15 @@ conn = duckdb.connect("../data/lake/database.duckdb")
 # convert to geodataframe
 th_bounds = gpd.read_file("../data/geoBoundaries-THA-ADM1_simplified.geojson")
 th_bounds = th_bounds.set_crs(epsg=4326)
-chiang_mai_bounds = th_bounds[th_bounds["shapeName"] == "Chiang Mai Province"]
-chiang_mai_bounds.plot()
+provinces = [
+    "Chiang Mai Province",
+    # "Lamphun Province",
+    # "Lampang Province",
+    # "Chiang Rai Province",
+    # "Mae Hong Son Province"
+]
+provinces_bounds = th_bounds[th_bounds["shapeName"].isin(provinces)]
+provinces_bounds.plot()
 
 # %% [markdown]
 # ### NASA FIRMS
@@ -77,8 +87,8 @@ firms_df.head(5)
 
 # %%
 # intersect with chiang mai bounds
-firms_chiang_mai_df = gpd.sjoin(firms_df, chiang_mai_bounds, how="inner")
-firms_chiang_mai_df = firms_chiang_mai_df.drop(
+firms_provinces_df = gpd.sjoin(firms_df, provinces_bounds, how="inner")
+firms_provinces_df = firms_provinces_df.drop(
     columns=[
         "shapeName",
         "shapeISO",
@@ -88,25 +98,23 @@ firms_chiang_mai_df = firms_chiang_mai_df.drop(
         "index_right",
     ]
 )
-firms_chiang_mai_df = firms_chiang_mai_df.sort_values(
-    by=["acq_datetime"], ascending=True
-)
+firms_provinces_df = firms_provinces_df.sort_values(by=["acq_datetime"], ascending=True)
 # firms_chiang_mai_df['geometry'] = firms_chiang_mai_df['geometry'].apply(wkt.loads)
-firms_chiang_mai_df = gpd.GeoDataFrame(firms_chiang_mai_df, geometry="geometry")
-firms_chiang_mai_df = firms_chiang_mai_df.set_crs(epsg=4326)
-firms_chiang_mai_df = firms_chiang_mai_df[
+firms_provinces_df = gpd.GeoDataFrame(firms_provinces_df, geometry="geometry")
+firms_provinces_df = firms_provinces_df.set_crs(epsg=4326)
+firms_provinces_df = firms_provinces_df[
     ["acq_datetime", "bright_ti4", "frp", "geometry"]
 ]
-firms_chiang_mai_df = firms_chiang_mai_df[
-    (firms_chiang_mai_df["acq_datetime"] >= "2025-02-01")
-    & (firms_chiang_mai_df["acq_datetime"] < "2025-04-01")
+firms_provinces_df = firms_provinces_df[
+    (firms_provinces_df["acq_datetime"] >= "2025-02-01")
+    & (firms_provinces_df["acq_datetime"] < "2025-04-01")
 ]
 
-firms_chiang_mai_df.head(5)
+firms_provinces_df.head(5)
 
 # %%
 # visualize
-firms_chiang_mai_df.explore(
+firms_provinces_df.explore(
     column="bright_ti4", cmap="viridis", tiles="CartoDB dark_matter"
 )
 
@@ -135,5 +143,91 @@ waqi_df.head(5)
 #
 # - average temp of hotspots per day
 # - number of hotspots per day
+
+# %%
+firms_date = (
+    firms_provinces_df.groupby(firms_provinces_df["acq_datetime"].dt.date)
+    .agg({"bright_ti4": "count"})
+    .reset_index()
+)
+firms_date = firms_date.rename(
+    columns={"acq_datetime": "date", "bright_ti4": "count_hotspots"}
+)
+firms_date["date"] = pd.to_datetime(firms_date["date"])
+firms_date.head(5)
+
+# %%
+firms_waqi = firms_date.merge(waqi_df, on="date", how="outer")
+firms_waqi["count_hotspots"] = firms_waqi["count_hotspots"].fillna(0)
+firms_waqi.head(10)
+
+# %%
+plt.figure(figsize=(10, 5))
+
+plt.plot(
+    firms_waqi.index,
+    firms_waqi["count_hotspots"],
+    label="Count of Hotspots",
+    color="blue",
+    marker="o",
+)
+plt.plot(
+    firms_waqi.index, firms_waqi["pm25"], label="PM2.5 Levels", color="red", marker="o"
+)
+
+plt.title("Time Series of Count Hotspots and PM2.5 Levels", fontsize=14)
+plt.xlabel("Date", fontsize=12)
+plt.ylabel("Values", fontsize=12)
+plt.xticks(fontsize=10)
+plt.yticks(fontsize=10)
+plt.legend()
+plt.grid()
+
+plt.tight_layout()
+plt.show()
+
+# %%
+# seasonal decomposition details
+seasonal_decompose_model = "additive"  # additive | multiplicative
+component = "trend"  # observed | trend | seasonal | resid
+
+# set datetime index to daily
+firms_waqi.set_index("date", inplace=True)
+firms_waqi = firms_waqi.asfreq("D").fillna(0)
+firms_waqi["date"] = firms_waqi.index
+
+plt.figure(figsize=(12, 4))
+ax1 = plt.gca()
+ax2 = ax1.twinx()
+
+# seasonal decomposition
+hotspots_decomposition = sm.tsa.seasonal_decompose(
+    firms_waqi["count_hotspots"], model=seasonal_decompose_model
+)
+hotspots_component = getattr(hotspots_decomposition, component)
+ax1.plot(
+    hotspots_component.index, hotspots_component, label="Count of Hotspots", linewidth=1
+)
+
+pm25_decomposition = sm.tsa.seasonal_decompose(
+    firms_waqi["pm25"], model=seasonal_decompose_model
+)
+pm25_component = getattr(pm25_decomposition, component)
+ax2.plot(
+    pm25_component.index,
+    pm25_component,
+    label="PM2.5 Levels",
+    linewidth=0.5,
+    linestyle="--",
+)
+
+ax1.set_ylabel("Count of Hotspots")
+ax2.set_ylabel("PM2.5 Levels")
+
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 + labels2, loc="upper left")
+
+plt.show()
 
 # %%
